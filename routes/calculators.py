@@ -1,9 +1,10 @@
 """
-routes/calculators.py  v2.0.0
+routes/calculators.py  v2.1.0
 Locked template — JARVIS title_company gig.
 POST endpoints for all 11 calculator flavors. Service-layer does the math —
 this file is pure HTTP plumbing.
 
+v2.1.0: Added GET / list endpoint for frontend calculator hub.
 v2.0.0: Added TruValue, BuyerCompensation, BuyNowVsLater, PriceVsRate,
   ExtraPayment, ScenarioCompare endpoints.
 """
@@ -29,6 +30,24 @@ from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["calculators"])
+
+
+@router.get("/", status_code=200)
+def list_calculators():
+    """Return list of available calculator endpoints."""
+    return [
+        {"name": "Seller Net Sheet", "endpoint": "/calculators/seller-net-sheet", "method": "POST", "description": "Calculate seller net proceeds with title insurance"},
+        {"name": "Buyer Estimate", "endpoint": "/calculators/buyer-estimate", "method": "POST", "description": "Estimate buyer closing costs and cash to close"},
+        {"name": "Sell vs Rent", "endpoint": "/calculators/sell-vs-rent", "method": "POST", "description": "Compare selling vs renting over time"},
+        {"name": "Holding Cost", "endpoint": "/calculators/holding-cost", "method": "POST", "description": "Calculate monthly and total holding costs"},
+        {"name": "Buydown", "endpoint": "/calculators/buydown", "method": "POST", "description": "Rate buydown scenarios and break-even analysis"},
+        {"name": "TruValue Analysis", "endpoint": "/calculators/truvalue", "method": "POST", "description": "Compare net proceeds at 3 listing prices"},
+        {"name": "Buyer Compensation", "endpoint": "/calculators/buyer-compensation", "method": "POST", "description": "Post-NAR settlement compensation scenarios"},
+        {"name": "Buy Now vs Later", "endpoint": "/calculators/buy-now-vs-later", "method": "POST", "description": "Cost of waiting to purchase"},
+        {"name": "Price vs Rate", "endpoint": "/calculators/price-vs-rate", "method": "POST", "description": "Price and rate impact on monthly payment"},
+        {"name": "Extra Payment", "endpoint": "/calculators/extra-payment", "method": "POST", "description": "Impact of extra mortgage payments"},
+        {"name": "Scenario Compare", "endpoint": "/calculators/scenario-compare", "method": "POST", "description": "Side-by-side comparison of two offers"},
+    ]
 
 
 def _get_calculator_service(db: Session = Depends(get_db)) -> TitleCalculatorService:

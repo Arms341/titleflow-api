@@ -1,0 +1,52 @@
+# render.yaml — Render Blueprint for TitleFlow Backend
+# Push this to your GitHub repo root, then connect the repo to Render.
+# Render reads this file and creates all services automatically.
+
+services:
+  - type: web
+    name: titleflow-api
+    runtime: python
+    plan: free               # Change to "starter" ($7/mo) for always-on
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: titleflow-db
+          property: connectionURI
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: ADMIN_EMAIL
+        value: lee@hubcitytitle.com
+      - key: ADMIN_PASSWORD
+        sync: false          # Set manually in Render dashboard
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false          # Set manually
+      - key: SMTP_PASSWORD
+        sync: false          # Set manually
+      - key: FROM_EMAIL
+        value: noreply@hubcitytitle.com
+      - key: BASE_URL
+        value: https://mytitleflow.com
+      - key: CORS_ORIGINS
+        value: https://mytitleflow.com,https://www.mytitleflow.com
+      - key: PYTHON_VERSION
+        value: 3.11.9
+    healthCheckPath: /health
+    autoDeploy: true         # Auto-deploy on git push
+
+databases:
+  - name: titleflow-db
+    plan: free               # 256MB, plenty for MVP
+    databaseName: titleflow
+    user: titleflow

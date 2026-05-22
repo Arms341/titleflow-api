@@ -1,0 +1,163 @@
+{
+  "fgv_version": "1.3.0",
+  "frontend_dir": "projects_workspace\\generated\\build_real_0521_2143\\frontend",
+  "backend_dir": "projects_workspace\\generated\\build_real_0521_2143",
+  "timestamp": "2026-05-21T22:01:13.233764",
+  "score": 100,
+  "grade": "A+",
+  "passed": true,
+  "hard_failures": [],
+  "probes": {
+    "npm_install": {
+      "passed": true,
+      "score": 10,
+      "message": "npm install succeeded",
+      "errors": []
+    },
+    "tsc_build": {
+      "passed": true,
+      "score": 45,
+      "message": "Build succeeded \u2014 TypeScript compiles clean",
+      "errors": [],
+      "ts_errors": []
+    },
+    "route_coverage": {
+      "passed": true,
+      "score": 20,
+      "message": "Full route coverage \u2014 10/10 entities have frontend pages",
+      "frontend_routes": [
+        "/login",
+        "/register",
+        "dashboard",
+        "companies",
+        "contact",
+        "contacts",
+        "county",
+        "countys",
+        "notifications",
+        "orders",
+        "rate-brackets",
+        "rate-brackets-list",
+        "rate-tables",
+        "reissue-discounts",
+        "reissue-discounts-list",
+        "saved-sheets",
+        "saved-sheets-export",
+        "calculators"
+      ],
+      "backend_entities": [
+        "calculators",
+        "contacts",
+        "counties",
+        "countys",
+        "notifications",
+        "orders",
+        "rate_brackets",
+        "rate_tables",
+        "reissue_discounts",
+        "saved_sheets"
+      ],
+      "covered": [
+        "calculators",
+        "contacts",
+        "counties",
+        "countys",
+        "notifications",
+        "orders",
+        "rate_brackets",
+        "rate_tables",
+        "reissue_discounts",
+        "saved_sheets"
+      ],
+      "missing": [],
+      "coverage": 1.0
+    },
+    "page_completeness": {
+      "passed": true,
+      "score": 15,
+      "message": "20/20 pages valid",
+      "pages": [
+        "Login",
+        "Register",
+        "Home",
+        "NotFound",
+        "Dashboard",
+        "CompanyPage",
+        "ContactPage",
+        "ContactsPage",
+        "CountyPage",
+        "CountysPage",
+        "NotificationPage",
+        "OrderPage",
+        "RateBracketPage",
+        "RateBracketsPage",
+        "RateTablePage",
+        "ReissueDiscountPage",
+        "ReissueDiscountsPage",
+        "SavedSheetPage",
+        "SavedSheetsExportPage",
+        "CalculatorPage"
+      ],
+      "valid_pages": [
+        "Login",
+        "Register",
+        "Home",
+        "NotFound",
+        "Dashboard",
+        "CompanyPage",
+        "ContactPage",
+        "ContactsPage",
+        "CountyPage",
+        "CountysPage",
+        "NotificationPage",
+        "OrderPage",
+        "RateBracketPage",
+        "RateBracketsPage",
+        "RateTablePage",
+        "ReissueDiscountPage",
+        "ReissueDiscountsPage",
+        "SavedSheetPage",
+        "SavedSheetsExportPage",
+        "CalculatorPage"
+      ],
+      "missing_pages": [],
+      "no_default_export": []
+    },
+    "auth_contract": {
+      "passed": true,
+      "score": 10,
+      "message": "3/3 auth contract checks passed",
+      "checks": [
+        {
+          "name": "FRONTEND-API-PORT",
+          "file": "src\\lib\\api.ts",
+          "expected_port": 8765,
+          "found_port": 8765,
+          "passed": true
+        },
+        {
+          "name": "FRONTEND-LOGIN-ENDPOINT",
+          "file": "src\\lib\\api.ts",
+          "uses_auth_login": true,
+          "uses_auth_token": false,
+          "passed": true
+        },
+        {
+          "name": "FRONTEND-USER-IS-ACTIVE",
+          "file": "src\\types\\index.ts",
+          "has_is_active": true,
+          "passed": true
+        }
+      ],
+      "errors": []
+    }
+  },
+  "weights": {
+    "npm_install": 10,
+    "tsc_build": 45,
+    "route_coverage": 20,
+    "page_completeness": 15,
+    "auth_contract": 10
+  },
+  "elapsed_seconds": 3.564178
+}

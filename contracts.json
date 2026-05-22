@@ -1,0 +1,1243 @@
+[
+  {
+    "filepath": "main.py",
+    "contracts": [
+      {
+        "function_name": "module_main",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for main.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "config.py",
+    "contracts": [
+      {
+        "function_name": "module_config",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for config.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "database.py",
+    "contracts": [
+      {
+        "function_name": "module_database",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for database.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/base.py",
+    "contracts": [
+      {
+        "function_name": "module_models_base",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/base.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/company.py",
+    "contracts": [
+      {
+        "function_name": "module_models_company",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/company.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/rate_table.py",
+    "contracts": [
+      {
+        "function_name": "module_models_rate_table",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/rate_table.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/rate_bracket.py",
+    "contracts": [
+      {
+        "function_name": "module_models_rate_bracket",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/rate_bracket.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/county.py",
+    "contracts": [
+      {
+        "function_name": "module_models_county",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/county.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/saved_sheet.py",
+    "contracts": [
+      {
+        "function_name": "module_models_saved_sheet",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/saved_sheet.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/order.py",
+    "contracts": [
+      {
+        "function_name": "module_models_order",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/order.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/company.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_company",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/company.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/rate_table.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_rate_table",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/rate_table.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/rate_bracket.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_rate_bracket",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/rate_bracket.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/county.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_county",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/county.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/saved_sheet.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_saved_sheet",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/saved_sheet.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/order.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_order",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/order.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/user_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_user_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/user_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/company_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_company_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/company_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/rate_table_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_rate_table_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/rate_table_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/rate_bracket_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_rate_bracket_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/rate_bracket_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/county_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_county_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/county_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/saved_sheet_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_saved_sheet_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/saved_sheet_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/order_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_order_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/order_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/auth.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_auth",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/auth.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/company.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_company",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/company.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/rate_tables.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_rate_tables",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/rate_tables.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/counties.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_counties",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/counties.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/saved_sheets.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_saved_sheets",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/saved_sheets.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/orders.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_orders",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/orders.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/admin.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_admin",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/admin.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/calculators.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_calculators",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/calculators.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/conftest.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_conftest",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/conftest.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "auth/jwt_handler.py",
+    "contracts": [
+      {
+        "function_name": "module_auth_jwt_handler",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for auth/jwt_handler.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "auth/dependencies.py",
+    "contracts": [
+      {
+        "function_name": "module_auth_dependencies",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for auth/dependencies.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "auth/schemas.py",
+    "contracts": [
+      {
+        "function_name": "module_auth_schemas",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for auth/schemas.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/uploads.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_uploads",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/uploads.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/ws.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_ws",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/ws.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "websocket/manager.py",
+    "contracts": [
+      {
+        "function_name": "module_websocket_manager",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for websocket/manager.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/base.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_base",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/base.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "alembic/env.py",
+    "contracts": [
+      {
+        "function_name": "module_alembic_env",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for alembic/env.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_api.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_api",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_api.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_auth.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_auth",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_auth.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_health.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_health",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_health.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_rate_tables.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_rate_tables",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_rate_tables.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/rate_brackets.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_rate_brackets",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/rate_brackets.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_rate_brackets.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_rate_brackets",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_rate_brackets.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/reissue_discount.py",
+    "contracts": [
+      {
+        "function_name": "module_models_reissue_discount",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/reissue_discount.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/reissue_discount.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_reissue_discount",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/reissue_discount.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/reissue_discount_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_reissue_discount_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/reissue_discount_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/reissue_discounts.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_reissue_discounts",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/reissue_discounts.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_reissue_discounts.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_reissue_discounts",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_reissue_discounts.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_counties.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_counties",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_counties.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_company.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_company",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_company.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_saved_sheets.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_saved_sheets",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_saved_sheets.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_orders.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_orders",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_orders.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/calculator.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_calculator",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/calculator.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/title_calculator.py",
+    "contracts": [
+      {
+        "function_name": "module_services_title_calculator",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/title_calculator.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_calculators.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_calculators",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_calculators.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/shared.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_shared",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/shared.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_shared.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_shared",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_shared.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/pdf_generator.py",
+    "contracts": [
+      {
+        "function_name": "module_services_pdf_generator",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/pdf_generator.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/email_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_email_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/email_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/saved_sheets_export.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_saved_sheets_export",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/saved_sheets_export.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/notification.py",
+    "contracts": [
+      {
+        "function_name": "module_models_notification",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/notification.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/notification.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_notification",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/notification.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/notification_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_notification_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/notification_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/notifications.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_notifications",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/notifications.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_notifications.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_notifications",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_notifications.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "models/contact.py",
+    "contracts": [
+      {
+        "function_name": "module_models_contact",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for models/contact.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "schemas/contact.py",
+    "contracts": [
+      {
+        "function_name": "module_schemas_contact",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for schemas/contact.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "services/contact_service.py",
+    "contracts": [
+      {
+        "function_name": "module_services_contact_service",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for services/contact_service.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "routes/contacts.py",
+    "contracts": [
+      {
+        "function_name": "module_routes_contacts",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for routes/contacts.py",
+        "has_contract_code": true
+      }
+    ]
+  },
+  {
+    "filepath": "tests/test_contacts.py",
+    "contracts": [
+      {
+        "function_name": "module_tests_test_contacts",
+        "preconditions": [
+          "module can be imported without errors"
+        ],
+        "postconditions": [
+          "module exports expected symbols"
+        ],
+        "invariants": [],
+        "description": "Structural contract for tests/test_contacts.py",
+        "has_contract_code": true
+      }
+    ]
+  }
+]

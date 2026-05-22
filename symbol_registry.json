@@ -1,0 +1,4740 @@
+{
+  "timestamp": "2026-05-21T21:58:03.195095",
+  "total_files": 74,
+  "files": {
+    "config.py": {
+      "filepath": "config.py",
+      "exports": [
+        "ACCESS_TOKEN_EXPIRE_MINUTES",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "SECRET_KEY",
+        "MAX_FILE_SIZE",
+        "get_settings",
+        "validate_config",
+        "load_config",
+        "DEBUG",
+        "API_VERSION",
+        "JWT_SECRET",
+        "logger",
+        "Settings",
+        "ConfigError",
+        "ALGORITHM"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "functools",
+          "symbols": [
+            "lru_cache"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic_settings",
+          "symbols": [
+            "BaseSettings"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "ConfigDict"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseSettings"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/uploads.py",
+        "auth/jwt_handler.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.493569"
+    },
+    "alembic/env.py": {
+      "filepath": "alembic/env.py",
+      "exports": [
+        "config",
+        "run_migrations_offline",
+        "run_migrations_online",
+        "target_metadata"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "sys",
+          "symbols": [
+            "sys"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "logging.config",
+          "symbols": [
+            "fileConfig"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pathlib",
+          "symbols": [
+            "Path"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "alembic",
+          "symbols": [
+            "context"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "engine_from_config",
+            "pool"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "Base"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.505283"
+    },
+    "database.py": {
+      "filepath": "database.py",
+      "exports": [
+        "engine",
+        "SessionLocal",
+        "check_db_health",
+        "get_db",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "asyncio",
+          "symbols": [
+            "asyncio"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Generator"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "create_engine",
+            "text"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "sessionmaker",
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/auth.py",
+        "routes/calculators.py",
+        "routes/company.py",
+        "routes/contacts.py",
+        "routes/counties.py",
+        "routes/notifications.py",
+        "routes/orders.py",
+        "routes/rate_brackets.py",
+        "routes/rate_tables.py",
+        "routes/reissue_discounts.py",
+        "routes/saved_sheets.py",
+        "routes/saved_sheets_export.py",
+        "routes/shared.py",
+        "routes/uploads.py",
+        "services/company_service.py",
+        "services/contact_service.py",
+        "services/county_service.py",
+        "services/notification_service.py",
+        "services/order_service.py",
+        "services/rate_bracket_service.py",
+        "services/rate_table_service.py",
+        "services/reissue_discount_service.py",
+        "services/saved_sheet_service.py",
+        "services/title_calculator.py",
+        "routes/countys.py",
+        "auth/dependencies.py",
+        "main.py",
+        "tests/conftest.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.510991"
+    },
+    "models/base.py": {
+      "filepath": "models/base.py",
+      "exports": [
+        "verify_password",
+        "get_password_hash",
+        "logger",
+        "Base"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "DeclarativeBase"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "passlib.context",
+          "symbols": [
+            "CryptContext"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "hashlib",
+          "symbols": [
+            "hashlib"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "hashlib",
+          "symbols": [
+            "hashlib"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "models/rate_bracket.py",
+        "models/company.py",
+        "models/contact.py",
+        "models/county.py",
+        "models/notification.py",
+        "models/order.py",
+        "models/rate_table.py",
+        "models/reissue_discount.py",
+        "models/saved_sheet.py",
+        "routes/auth.py",
+        "services/user_service.py",
+        "main.py",
+        "tests/conftest.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.515738"
+    },
+    "schemas/base.py": {
+      "filepath": "schemas/base.py",
+      "exports": [
+        "SuccessResponse",
+        "TokenResponse",
+        "AppBaseModel",
+        "ErrorResponse",
+        "logger",
+        "UserSchema"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional",
+            "Any",
+            "Dict"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.520007"
+    },
+    "auth/schemas.py": {
+      "filepath": "auth/schemas.py",
+      "exports": [
+        "UserResponse",
+        "UserCreate",
+        "TokenData",
+        "TokenSchema",
+        "logger",
+        "UserSchema"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "field_validator"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/auth.py",
+        "services/user_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:31.525455"
+    },
+    "models/rate_bracket.py": {
+      "filepath": "models/rate_bracket.py",
+      "exports": [
+        "RateBracket",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "DateTime",
+            "ForeignKey",
+            "Integer",
+            "Numeric"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/rate_bracket_service.py",
+        "services/rate_table_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:35.778102"
+    },
+    "models/company.py": {
+      "filepath": "models/company.py",
+      "exports": [
+        "Company",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "DateTime",
+            "Integer",
+            "String",
+            "Text"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/company_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:39.469563"
+    },
+    "models/contact.py": {
+      "filepath": "models/contact.py",
+      "exports": [
+        "logger",
+        "Contact"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "DateTime",
+            "Integer",
+            "String",
+            "Text"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/contact_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:45.265177"
+    },
+    "models/county.py": {
+      "filepath": "models/county.py",
+      "exports": [
+        "County",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Boolean",
+            "Column",
+            "Date",
+            "DateTime",
+            "ForeignKey",
+            "Integer",
+            "Numeric",
+            "String"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/county_service.py",
+        "services/title_calculator.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:49.071771"
+    },
+    "models/notification.py": {
+      "filepath": "models/notification.py",
+      "exports": [
+        "Notification",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "DateTime",
+            "Integer",
+            "String",
+            "Text"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "relationship"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/notification_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:53.111067"
+    },
+    "models/order.py": {
+      "filepath": "models/order.py",
+      "exports": [
+        "Order",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "Date",
+            "DateTime",
+            "ForeignKey",
+            "Integer",
+            "String",
+            "Text"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/order_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:43:58.333919"
+    },
+    "models/rate_table.py": {
+      "filepath": "models/rate_table.py",
+      "exports": [
+        "RateTable",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Boolean",
+            "Column",
+            "Date",
+            "DateTime",
+            "Integer",
+            "String"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/rate_table_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:03.242680"
+    },
+    "models/reissue_discount.py": {
+      "filepath": "models/reissue_discount.py",
+      "exports": [
+        "ReissueDiscount",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Column",
+            "DateTime",
+            "ForeignKey",
+            "Integer",
+            "Numeric"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/rate_table_service.py",
+        "services/reissue_discount_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:08.268996"
+    },
+    "models/saved_sheet.py": {
+      "filepath": "models/saved_sheet.py",
+      "exports": [
+        "logger",
+        "SavedSheet"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uuid",
+          "symbols": [
+            "uuid"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "Boolean",
+            "Column",
+            "DateTime",
+            "ForeignKey",
+            "Integer",
+            "JSON",
+            "String"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/base.py"
+      ],
+      "dependents": [
+        "services/saved_sheet_service.py",
+        "services/title_calculator.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:12.016334"
+    },
+    "schemas/reissue_discount.py": {
+      "filepath": "schemas/reissue_discount.py",
+      "exports": [
+        "ReissueDiscountBase",
+        "ReissueDiscountCreate",
+        "ReissueDiscountResponse",
+        "logger",
+        "ReissueDiscountUpdate"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/reissue_discounts.py",
+        "services/reissue_discount_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:18.360885"
+    },
+    "schemas/calculator.py": {
+      "filepath": "schemas/calculator.py",
+      "exports": [
+        "PriceVsRateCell",
+        "ExtraPaymentInput",
+        "CompensationScenario",
+        "BuydownInput",
+        "SellVsRentYear",
+        "AmortizationPoint",
+        "HoldingCostResult",
+        "BuyNowFutureScenario",
+        "LineItem",
+        "BuyerEstimateResult",
+        "PayoffScenario",
+        "SellerNetSheetInput",
+        "PriceVsRateResult",
+        "PriceVsRateInput",
+        "TruValueInput",
+        "SellVsRentResult",
+        "BuyerEstimateInput",
+        "TruValueScenario",
+        "BuyNowCurrentScenario",
+        "TruValueResult",
+        "logger",
+        "SellVsRentInput",
+        "BuydownYear",
+        "BuydownResult",
+        "HoldingCostInput",
+        "PayoffSavings",
+        "ScenarioOfferInput",
+        "BuyNowVsLaterInput",
+        "BuyerCompensationResult",
+        "ScenarioCompareInput",
+        "ScenarioCompareResult",
+        "BuyNowVsLaterResult",
+        "ExtraPaymentResult",
+        "BuyerCompensationInput",
+        "SellerNetSheetResult"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "date"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/calculators.py",
+        "services/title_calculator.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:27.735539"
+    },
+    "schemas/company.py": {
+      "filepath": "schemas/company.py",
+      "exports": [
+        "CompanyBase",
+        "CompanyUpdate",
+        "CompanyResponse",
+        "CompanyCreate",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/company.py",
+        "services/company_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:33.376640"
+    },
+    "schemas/contact.py": {
+      "filepath": "schemas/contact.py",
+      "exports": [
+        "ContactBase",
+        "ContactCreate",
+        "ContactResponse",
+        "logger",
+        "ContactUpdate"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/contacts.py",
+        "services/contact_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:45.287352"
+    },
+    "schemas/county.py": {
+      "filepath": "schemas/county.py",
+      "exports": [
+        "CountyCreate",
+        "CountyBase",
+        "CountyUpdate",
+        "CountyImportResult",
+        "logger",
+        "CountyResponse"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "date"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/counties.py",
+        "services/county_service.py",
+        "routes/countys.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:44:50.988619"
+    },
+    "schemas/notification.py": {
+      "filepath": "schemas/notification.py",
+      "exports": [
+        "NotificationBase",
+        "NotificationCreate",
+        "NotificationUpdate",
+        "logger",
+        "NotificationResponse"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/notifications.py",
+        "services/notification_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:02.890697"
+    },
+    "schemas/order.py": {
+      "filepath": "schemas/order.py",
+      "exports": [
+        "OrderResponse",
+        "OrderBase",
+        "OrderUpdate",
+        "logger",
+        "OrderCreate",
+        "OrderStatusUpdate"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "date"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/orders.py",
+        "services/order_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:09.496381"
+    },
+    "schemas/rate_bracket.py": {
+      "filepath": "schemas/rate_bracket.py",
+      "exports": [
+        "RateBracketBulkCreate",
+        "RateBracketCreate",
+        "RateBracketResponse",
+        "logger",
+        "RateBracketBase",
+        "RateBracketUpdate"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/rate_brackets.py",
+        "services/rate_bracket_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:14.569010"
+    },
+    "schemas/rate_table.py": {
+      "filepath": "schemas/rate_table.py",
+      "exports": [
+        "RateTableBase",
+        "RateTableResponse",
+        "RateTableUpdate",
+        "logger",
+        "RateTableCreate"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "date"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/rate_tables.py",
+        "services/rate_table_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:19.513590"
+    },
+    "schemas/saved_sheet.py": {
+      "filepath": "schemas/saved_sheet.py",
+      "exports": [
+        "SavedSheetBase",
+        "SavedSheetUpdate",
+        "SavedSheetCreate",
+        "SavedSheetResponse",
+        "logger",
+        "ShareResponse"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any",
+            "Dict",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pydantic",
+          "symbols": [
+            "BaseModel",
+            "ConfigDict"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [
+        "routes/saved_sheets.py",
+        "services/saved_sheet_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:24.712766"
+    },
+    "routes/auth.py": {
+      "filepath": "routes/auth.py",
+      "exports": [
+        "token",
+        "router",
+        "register",
+        "get_me",
+        "logger",
+        "login"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.security",
+          "symbols": [
+            "OAuth2PasswordRequestForm"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "auth.jwt_handler",
+          "symbols": [
+            "create_access_token"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "auth.dependencies",
+          "symbols": [
+            "get_current_active_user"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "auth.schemas",
+          "symbols": [
+            "UserCreate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.user",
+          "symbols": [
+            "User"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "get_password_hash"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        }
+      ],
+      "dependencies": [
+        "auth/schemas.py",
+        "database.py",
+        "models/base.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:24.729475"
+    },
+    "routes/calculators.py": {
+      "filepath": "routes/calculators.py",
+      "exports": [
+        "seller_net_sheet",
+        "extra_payment",
+        "holding_cost",
+        "price_vs_rate",
+        "calculators_router",
+        "truvalue",
+        "router",
+        "sell_vs_rent",
+        "buyer_estimate",
+        "scenario_compare",
+        "buydown",
+        "buyer_compensation",
+        "logger",
+        "buy_now_vs_later"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.calculator",
+          "symbols": [
+            "BuydownInput",
+            "BuydownResult",
+            "BuyerCompensationInput",
+            "BuyerCompensationResult",
+            "BuyerEstimateInput",
+            "BuyerEstimateResult",
+            "BuyNowVsLaterInput",
+            "BuyNowVsLaterResult",
+            "ExtraPaymentInput",
+            "ExtraPaymentResult",
+            "HoldingCostInput",
+            "HoldingCostResult",
+            "PriceVsRateInput",
+            "PriceVsRateResult",
+            "ScenarioCompareInput",
+            "ScenarioCompareResult",
+            "SellerNetSheetInput",
+            "SellerNetSheetResult",
+            "SellVsRentInput",
+            "SellVsRentResult",
+            "TruValueInput",
+            "TruValueResult"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.title_calculator",
+          "symbols": [
+            "CalculatorError",
+            "TitleCalculatorService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "schemas/calculator.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:42.394497"
+    },
+    "routes/company.py": {
+      "filepath": "routes/company.py",
+      "exports": [
+        "router",
+        "update_company",
+        "logger",
+        "company_router",
+        "get_company"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.company",
+          "symbols": [
+            "CompanyResponse",
+            "CompanyUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.company_service",
+          "symbols": [
+            "CompanyService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/company.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:47.715300"
+    },
+    "routes/contacts.py": {
+      "filepath": "routes/contacts.py",
+      "exports": [
+        "delete_contact",
+        "create_contact",
+        "router",
+        "get_contact",
+        "update_contact",
+        "list_contacts",
+        "logger",
+        "contacts_router"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.contact",
+          "symbols": [
+            "ContactCreate",
+            "ContactResponse",
+            "ContactUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.contact_service",
+          "symbols": [
+            "ContactService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/contact.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:45:55.622656"
+    },
+    "routes/counties.py": {
+      "filepath": "routes/counties.py",
+      "exports": [
+        "delete_county",
+        "update_county",
+        "router",
+        "counties_router",
+        "list_counties",
+        "get_county",
+        "logger",
+        "create_county"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "File",
+            "HTTPException",
+            "Query",
+            "UploadFile"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.county",
+          "symbols": [
+            "CountyCreate",
+            "CountyImportResult",
+            "CountyResponse",
+            "CountyUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.county_service",
+          "symbols": [
+            "CountyService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "schemas/county.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:06.074898"
+    },
+    "routes/notifications.py": {
+      "filepath": "routes/notifications.py",
+      "exports": [
+        "list_notifications",
+        "update_notification",
+        "create_notification",
+        "router",
+        "delete_notification",
+        "logger",
+        "get_notification",
+        "notifications_router"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.notification",
+          "symbols": [
+            "NotificationCreate",
+            "NotificationResponse",
+            "NotificationUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.notification_service",
+          "symbols": [
+            "NotificationService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/notification.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:14.271876"
+    },
+    "routes/orders.py": {
+      "filepath": "routes/orders.py",
+      "exports": [
+        "update_order_status",
+        "router",
+        "update_order",
+        "delete_order",
+        "logger",
+        "get_order",
+        "orders_router",
+        "create_order",
+        "list_orders"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.order",
+          "symbols": [
+            "OrderCreate",
+            "OrderResponse",
+            "OrderStatusUpdate",
+            "OrderUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.order_service",
+          "symbols": [
+            "OrderService",
+            "ServiceError"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/order.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:24.918772"
+    },
+    "routes/rate_brackets.py": {
+      "filepath": "routes/rate_brackets.py",
+      "exports": [
+        "list_rate_brackets",
+        "delete_rate_bracket",
+        "get_rate_bracket",
+        "router",
+        "create_rate_bracket",
+        "bulk_create_brackets",
+        "update_rate_bracket",
+        "logger",
+        "rate_brackets_router"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.rate_bracket",
+          "symbols": [
+            "RateBracketBulkCreate",
+            "RateBracketCreate",
+            "RateBracketResponse",
+            "RateBracketUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.rate_bracket_service",
+          "symbols": [
+            "RateBracketService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/rate_bracket.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:34.283469"
+    },
+    "routes/rate_tables.py": {
+      "filepath": "routes/rate_tables.py",
+      "exports": [
+        "delete_rate_table",
+        "list_public_rate_tables",
+        "router",
+        "rate_tables_router",
+        "logger",
+        "get_rate_table",
+        "create_rate_table",
+        "list_rate_tables",
+        "update_rate_table"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.rate_table",
+          "symbols": [
+            "RateTableCreate",
+            "RateTableResponse",
+            "RateTableUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.rate_table_service",
+          "symbols": [
+            "RateTableService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "schemas/rate_table.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:43.212190"
+    },
+    "routes/reissue_discounts.py": {
+      "filepath": "routes/reissue_discounts.py",
+      "exports": [
+        "delete_reissue_discount",
+        "update_reissue_discount",
+        "router",
+        "reissue_discounts_router",
+        "list_reissue_discounts",
+        "logger",
+        "create_reissue_discount",
+        "get_reissue_discount"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.reissue_discount",
+          "symbols": [
+            "ReissueDiscountCreate",
+            "ReissueDiscountResponse",
+            "ReissueDiscountUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.reissue_discount_service",
+          "symbols": [
+            "ReissueDiscountService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/reissue_discount.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:46:51.892825"
+    },
+    "routes/saved_sheets.py": {
+      "filepath": "routes/saved_sheets.py",
+      "exports": [
+        "delete_saved_sheet",
+        "share_saved_sheet",
+        "list_saved_sheets",
+        "router",
+        "create_saved_sheet",
+        "logger",
+        "saved_sheets_router",
+        "update_saved_sheet",
+        "get_saved_sheet"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.saved_sheet",
+          "symbols": [
+            "SavedSheetCreate",
+            "SavedSheetResponse",
+            "SavedSheetUpdate",
+            "ShareResponse"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.saved_sheet_service",
+          "symbols": [
+            "SavedSheetService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/saved_sheet.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:01.591788"
+    },
+    "routes/saved_sheets_export.py": {
+      "filepath": "routes/saved_sheets_export.py",
+      "exports": [
+        "download_saved_sheet_pdf",
+        "router",
+        "logger",
+        "saved_sheets_export_router"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any",
+            "Dict"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.responses",
+          "symbols": [
+            "StreamingResponse"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.company_service",
+          "symbols": [
+            "CompanyService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.pdf_generator",
+          "symbols": [
+            "PdfGenerator",
+            "PdfGeneratorError"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.saved_sheet_service",
+          "symbols": [
+            "SavedSheetService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:06.875553"
+    },
+    "routes/shared.py": {
+      "filepath": "routes/shared.py",
+      "exports": [
+        "get_shared_sheet",
+        "shared_router",
+        "router",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any",
+            "Dict"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.company_service",
+          "symbols": [
+            "CompanyService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.saved_sheet_service",
+          "symbols": [
+            "SavedSheetService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:14.890382"
+    },
+    "routes/uploads.py": {
+      "filepath": "routes/uploads.py",
+      "exports": [
+        "update_upload",
+        "uploads_router",
+        "download_task_file",
+        "router",
+        "upload_task_file",
+        "delete_task_file",
+        "delete_upload",
+        "list_uploads",
+        "get_upload",
+        "logger",
+        "create_upload"
+      ],
+      "imports": [
+        {
+          "type": "from",
+          "module": "__future__",
+          "symbols": [
+            "annotations"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "File",
+            "HTTPException",
+            "UploadFile"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.responses",
+          "symbols": [
+            "Response"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.uploads",
+          "symbols": [
+            "Uploads"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "storage.s3_client",
+          "symbols": [
+            "S3Client"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "config",
+          "symbols": [
+            "get_settings"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        }
+      ],
+      "dependencies": [
+        "config.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:14.917242"
+    },
+    "routes/ws.py": {
+      "filepath": "routes/ws.py",
+      "exports": [
+        "ws_router",
+        "router",
+        "logger",
+        "ws_status"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "WebSocket",
+            "WebSocketDisconnect"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:14.946790"
+    },
+    "services/company_service.py": {
+      "filepath": "services/company_service.py",
+      "exports": [
+        "CompanyService",
+        "ServiceError",
+        "logger",
+        "get_company_service"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.company",
+          "symbols": [
+            "Company"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.company",
+          "symbols": [
+            "CompanyCreate",
+            "CompanyUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/company.py",
+        "models/company.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:24.777521"
+    },
+    "services/contact_service.py": {
+      "filepath": "services/contact_service.py",
+      "exports": [
+        "ContactService",
+        "get_contact_service",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.contact",
+          "symbols": [
+            "Contact"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.contact",
+          "symbols": [
+            "ContactCreate",
+            "ContactUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/contact.py",
+        "schemas/contact.py",
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:33.871944"
+    },
+    "services/county_service.py": {
+      "filepath": "services/county_service.py",
+      "exports": [
+        "CountyService",
+        "ServiceError",
+        "logger",
+        "get_county_service"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "csv",
+          "symbols": [
+            "csv"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "io",
+          "symbols": [
+            "io"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal",
+            "InvalidOperation"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.county",
+          "symbols": [
+            "County"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.county",
+          "symbols": [
+            "CountyCreate",
+            "CountyUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "or_",
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/county.py",
+        "database.py",
+        "schemas/county.py"
+      ],
+      "dependents": [
+        "routes/countys.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:47:54.044295"
+    },
+    "services/email_service.py": {
+      "filepath": "services/email_service.py",
+      "exports": [
+        "EmailError",
+        "EmailService",
+        "get_email_service",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "email.message",
+          "symbols": [
+            "EmailMessage"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any",
+            "Dict",
+            "Optional"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "aiosmtplib",
+          "symbols": [
+            "aiosmtplib"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:48:03.749628"
+    },
+    "services/notification_service.py": {
+      "filepath": "services/notification_service.py",
+      "exports": [
+        "NotificationService",
+        "logger",
+        "get_notification_service"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.notification",
+          "symbols": [
+            "Notification"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.notification",
+          "symbols": [
+            "NotificationCreate",
+            "NotificationUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/notification.py",
+        "database.py",
+        "models/notification.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:48:12.695548"
+    },
+    "services/order_service.py": {
+      "filepath": "services/order_service.py",
+      "exports": [
+        "ServiceError",
+        "VALID_STATUSES",
+        "get_order_service",
+        "logger",
+        "OrderService"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.order",
+          "symbols": [
+            "Order"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.order",
+          "symbols": [
+            "OrderCreate",
+            "OrderUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/order.py",
+        "database.py",
+        "models/order.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:48:22.062028"
+    },
+    "services/pdf_generator.py": {
+      "filepath": "services/pdf_generator.py",
+      "exports": [
+        "PdfGenerator",
+        "logger",
+        "get_pdf_generator",
+        "PdfGeneratorError"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "io",
+          "symbols": [
+            "io"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any",
+            "Dict",
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "reportlab.lib",
+          "symbols": [
+            "colors"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "reportlab.lib.pagesizes",
+          "symbols": [
+            "LETTER"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "reportlab.lib.styles",
+          "symbols": [
+            "ParagraphStyle",
+            "getSampleStyleSheet"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "reportlab.lib.units",
+          "symbols": [
+            "inch"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "reportlab.platypus",
+          "symbols": [
+            "Paragraph",
+            "SimpleDocTemplate",
+            "Spacer",
+            "Table",
+            "TableStyle"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:48:30.452673"
+    },
+    "services/rate_bracket_service.py": {
+      "filepath": "services/rate_bracket_service.py",
+      "exports": [
+        "RateBracketService",
+        "ServiceError",
+        "logger",
+        "get_rate_bracket_service"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.rate_bracket",
+          "symbols": [
+            "RateBracket"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.rate_bracket",
+          "symbols": [
+            "RateBracketCreate",
+            "RateBracketUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/rate_bracket.py",
+        "database.py",
+        "models/rate_bracket.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:48:40.830523"
+    },
+    "services/rate_table_service.py": {
+      "filepath": "services/rate_table_service.py",
+      "exports": [
+        "ServiceError",
+        "get_rate_table_service",
+        "logger",
+        "RateTableService"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.rate_bracket",
+          "symbols": [
+            "RateBracket"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.rate_table",
+          "symbols": [
+            "RateTable"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.reissue_discount",
+          "symbols": [
+            "ReissueDiscount"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.rate_table",
+          "symbols": [
+            "RateTableCreate",
+            "RateTableUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/rate_bracket.py",
+        "models/rate_table.py",
+        "database.py",
+        "schemas/rate_table.py",
+        "models/reissue_discount.py"
+      ],
+      "dependents": [
+        "services/title_calculator.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:49:03.862173"
+    },
+    "services/reissue_discount_service.py": {
+      "filepath": "services/reissue_discount_service.py",
+      "exports": [
+        "ReissueDiscountService",
+        "ServiceError",
+        "get_reissue_discount_service",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.reissue_discount",
+          "symbols": [
+            "ReissueDiscount"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.reissue_discount",
+          "symbols": [
+            "ReissueDiscountCreate",
+            "ReissueDiscountUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/reissue_discount.py",
+        "database.py",
+        "models/reissue_discount.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:49:27.898014"
+    },
+    "services/saved_sheet_service.py": {
+      "filepath": "services/saved_sheet_service.py",
+      "exports": [
+        "get_saved_sheet_service",
+        "ServiceError",
+        "SavedSheetService",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uuid",
+          "symbols": [
+            "uuid"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.saved_sheet",
+          "symbols": [
+            "SavedSheet"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.saved_sheet",
+          "symbols": [
+            "SavedSheetCreate",
+            "SavedSheetUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [
+        "schemas/saved_sheet.py",
+        "database.py",
+        "models/saved_sheet.py"
+      ],
+      "dependents": [
+        "services/user_service.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:49:39.223180"
+    },
+    "services/title_calculator.py": {
+      "filepath": "services/title_calculator.py",
+      "exports": [
+        "FHA_UFMIP_RATE",
+        "VA_FUNDING_FEE_RATE",
+        "get_title_calculator_service",
+        "E_RECORDING_FEE_BUYER",
+        "TitleCalculatorService",
+        "ORIGINATION_RATE",
+        "APPRAISAL_FEE",
+        "DOC_PREP_FEE",
+        "FLOOD_CERT_FEE",
+        "E_RECORDING_FEE",
+        "CREDIT_REPORT_FEE",
+        "DEFAULT_PER_DIEM_INTEREST_RATE",
+        "ZERO",
+        "logger",
+        "TITLE_SEARCH_FEE",
+        "CENT",
+        "TAX_CERT_FEE",
+        "TX_POLICY_GUARANTY_FEE",
+        "CalculatorError"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "date"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "decimal",
+          "symbols": [
+            "Decimal"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List",
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.county",
+          "symbols": [
+            "County"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.saved_sheet",
+          "symbols": [
+            "SavedSheet"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.calculator",
+          "symbols": [
+            "AmortizationPoint",
+            "BuydownInput",
+            "BuydownResult",
+            "BuydownYear",
+            "BuyerCompensationInput",
+            "BuyerCompensationResult",
+            "CompensationScenario",
+            "BuyerEstimateInput",
+            "BuyerEstimateResult",
+            "BuyNowCurrentScenario",
+            "BuyNowFutureScenario",
+            "BuyNowVsLaterInput",
+            "BuyNowVsLaterResult",
+            "ExtraPaymentInput",
+            "ExtraPaymentResult",
+            "PayoffSavings",
+            "PayoffScenario",
+            "HoldingCostInput",
+            "HoldingCostResult",
+            "LineItem",
+            "PriceVsRateCell",
+            "PriceVsRateInput",
+            "PriceVsRateResult",
+            "ScenarioCompareInput",
+            "ScenarioCompareResult",
+            "ScenarioOfferInput",
+            "SellerNetSheetInput",
+            "SellerNetSheetResult",
+            "SellVsRentInput",
+            "SellVsRentResult",
+            "SellVsRentYear",
+            "TruValueInput",
+            "TruValueResult",
+            "TruValueScenario"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.rate_table_service",
+          "symbols": [
+            "RateTableService"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uuid",
+          "symbols": [
+            "uuid"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uuid",
+          "symbols": [
+            "uuid"
+          ]
+        }
+      ],
+      "dependencies": [
+        "models/county.py",
+        "models/saved_sheet.py",
+        "services/rate_table_service.py",
+        "database.py",
+        "schemas/calculator.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:49:49.136982"
+    },
+    "services/user_service.py": {
+      "filepath": "services/user_service.py",
+      "exports": [
+        "UserService",
+        "logger",
+        "get_user_service"
+      ],
+      "imports": [
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "auth.schemas",
+          "symbols": [
+            "UserCreate",
+            "UserSchema"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "get_password_hash",
+            "verify_password"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.saved_sheet_service",
+          "symbols": [
+            "ServiceError"
+          ]
+        }
+      ],
+      "dependencies": [
+        "services/saved_sheet_service.py",
+        "auth/schemas.py",
+        "models/base.py"
+      ],
+      "dependents": [],
+      "quality_score": 64,
+      "built_at": "2026-05-21T21:51:13.071447"
+    },
+    "routes/countys.py": {
+      "filepath": "routes/countys.py",
+      "exports": [
+        "delete_county",
+        "update_county",
+        "router",
+        "list_counties",
+        "get_county",
+        "logger",
+        "create_county"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "APIRouter",
+            "Depends",
+            "HTTPException"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "schemas.county",
+          "symbols": [
+            "CountyCreate",
+            "CountyResponse",
+            "CountyUpdate"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "services.county_service",
+          "symbols": [
+            "get_county_service"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "schemas/county.py",
+        "services/county_service.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.452248"
+    },
+    "auth/dependencies.py": {
+      "filepath": "auth/dependencies.py",
+      "exports": [
+        "auth_dependency",
+        "oauth2_scheme",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.security",
+          "symbols": [
+            "OAuth2PasswordBearer"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "select"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "auth.jwt_handler",
+          "symbols": [
+            "verify_token"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.user",
+          "symbols": [
+            "User"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.512134"
+    },
+    "auth/jwt_handler.py": {
+      "filepath": "auth/jwt_handler.py",
+      "exports": [
+        "oauth2_scheme",
+        "verify_token",
+        "create_access_token",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "datetime",
+          "symbols": [
+            "datetime",
+            "timedelta"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Optional"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "jwt",
+          "symbols": [
+            "jwt"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.security",
+          "symbols": [
+            "OAuth2PasswordBearer"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "jwt.exceptions",
+          "symbols": [
+            "PyJWTError"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "config",
+          "symbols": [
+            "ALGORITHM",
+            "JWT_SECRET",
+            "ACCESS_TOKEN_EXPIRE_MINUTES"
+          ]
+        }
+      ],
+      "dependencies": [
+        "config.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.567641"
+    },
+    "websocket/manager.py": {
+      "filepath": "websocket/manager.py",
+      "exports": [
+        "ConnectionManager",
+        "WSManager",
+        "get_manager",
+        "WebSocketManager",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "List"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "WebSocket"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.651001"
+    },
+    "main.py": {
+      "filepath": "main.py",
+      "exports": [
+        "APP_VERSION",
+        "APP_DESCRIPTION",
+        "app",
+        "logger",
+        "APP_TITLE"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "importlib",
+          "symbols": [
+            "importlib"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "os",
+          "symbols": [
+            "os"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "contextlib",
+          "symbols": [
+            "asynccontextmanager"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "pathlib",
+          "symbols": [
+            "Path"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi",
+          "symbols": [
+            "FastAPI"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.middleware.cors",
+          "symbols": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "asyncio",
+          "symbols": [
+            "asyncio"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uvicorn",
+          "symbols": [
+            "uvicorn"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "engine"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "close_db"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "models/base.py"
+      ],
+      "dependents": [
+        "tests/conftest.py"
+      ],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.704870"
+    },
+    "tests/conftest.py": {
+      "filepath": "tests/conftest.py",
+      "exports": [
+        "test_db",
+        "override_get_db",
+        "auth_headers",
+        "TEST_DATABASE_URL",
+        "logger",
+        "TestingSessionLocal",
+        "client",
+        "setup_test_db"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.testclient",
+          "symbols": [
+            "TestClient"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy",
+          "symbols": [
+            "create_engine",
+            "event"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "sessionmaker",
+            "Session"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.pool",
+          "symbols": [
+            "StaticPool"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "models.base",
+          "symbols": [
+            "Base"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "database",
+          "symbols": [
+            "get_db"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "main",
+          "symbols": [
+            "app"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "models.task",
+          "symbols": [
+            "models.task"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "models.project",
+          "symbols": [
+            "models.project"
+          ]
+        }
+      ],
+      "dependencies": [
+        "database.py",
+        "main.py",
+        "models/base.py"
+      ],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.755607"
+    },
+    "tests/test_api.py": {
+      "filepath": "tests/test_api.py",
+      "exports": [
+        "test_list_endpoint",
+        "test_create_endpoint",
+        "logger",
+        "test_health_endpoint"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.testclient",
+          "symbols": [
+            "TestClient"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.812056"
+    },
+    "tests/test_auth.py": {
+      "filepath": "tests/test_auth.py",
+      "exports": [
+        "test_login_user",
+        "logger",
+        "test_register_user",
+        "test_protected_endpoint"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.testclient",
+          "symbols": [
+            "TestClient"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:14.869546"
+    },
+    "tests/test_calculators.py": {
+      "filepath": "tests/test_calculators.py",
+      "exports": [
+        "test_buydown_2_1",
+        "test_seller_net_sheet_with_reissue_discount",
+        "test_sell_vs_rent_basic",
+        "test_seller_net_sheet_basic",
+        "test_buyer_estimate_cash",
+        "logger",
+        "test_holding_cost_basic",
+        "test_buyer_estimate_conventional",
+        "test_buyer_estimate_fha_ufmip"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:28.526085"
+    },
+    "tests/test_company.py": {
+      "filepath": "tests/test_company.py",
+      "exports": [
+        "test_get_company_public",
+        "logger",
+        "test_get_company_after_update",
+        "test_update_company"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:35.800114"
+    },
+    "tests/test_contacts.py": {
+      "filepath": "tests/test_contacts.py",
+      "exports": [
+        "test_list_contacts",
+        "test_update_contact",
+        "test_delete_contact",
+        "test_get_contact",
+        "logger",
+        "test_create_contact"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:47.026404"
+    },
+    "tests/test_counties.py": {
+      "filepath": "tests/test_counties.py",
+      "exports": [
+        "test_create_county",
+        "test_list_counties_filter_by_state",
+        "test_get_county",
+        "test_delete_county",
+        "test_list_counties",
+        "logger",
+        "test_update_county"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:57.021244"
+    },
+    "tests/test_health.py": {
+      "filepath": "tests/test_health.py",
+      "exports": [
+        "test_root_endpoint",
+        "test_health_check",
+        "logger",
+        "test_health_returns_json"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.testclient",
+          "symbols": [
+            "TestClient"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:51:57.080271"
+    },
+    "tests/test_notifications.py": {
+      "filepath": "tests/test_notifications.py",
+      "exports": [
+        "test_get_notification",
+        "test_create_notification",
+        "test_update_notification",
+        "logger",
+        "test_delete_notification",
+        "test_list_notifications"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:52:08.584854"
+    },
+    "tests/test_orders.py": {
+      "filepath": "tests/test_orders.py",
+      "exports": [
+        "test_create_order",
+        "test_update_order_status",
+        "test_list_orders",
+        "test_delete_order",
+        "test_update_order",
+        "test_get_order",
+        "logger",
+        "test_update_order_status_invalid"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:52:18.940433"
+    },
+    "tests/test_rate_brackets.py": {
+      "filepath": "tests/test_rate_brackets.py",
+      "exports": [
+        "test_list_rate_brackets",
+        "test_delete_rate_bracket",
+        "test_update_rate_bracket",
+        "test_create_rate_bracket",
+        "test_bulk_create_brackets",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:52:29.853713"
+    },
+    "tests/test_rate_tables.py": {
+      "filepath": "tests/test_rate_tables.py",
+      "exports": [
+        "test_get_rate_table",
+        "test_public_rate_tables_unauth",
+        "test_list_rate_tables",
+        "logger",
+        "test_delete_rate_table",
+        "test_create_rate_table",
+        "test_update_rate_table"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:52:46.874120"
+    },
+    "tests/test_reissue_discounts.py": {
+      "filepath": "tests/test_reissue_discounts.py",
+      "exports": [
+        "test_list_reissue_discounts",
+        "test_create_reissue_discount",
+        "test_delete_reissue_discount",
+        "logger",
+        "test_update_reissue_discount"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:52:58.675236"
+    },
+    "tests/test_saved_sheets.py": {
+      "filepath": "tests/test_saved_sheets.py",
+      "exports": [
+        "test_list_saved_sheets",
+        "test_get_saved_sheet",
+        "test_update_saved_sheet",
+        "test_create_saved_sheet",
+        "logger",
+        "test_share_saved_sheet",
+        "test_delete_saved_sheet"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:53:09.149423"
+    },
+    "tests/test_shared.py": {
+      "filepath": "tests/test_shared.py",
+      "exports": [
+        "test_shared_endpoint_no_auth",
+        "test_shared_endpoint_invalid_token",
+        "logger"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "typing",
+          "symbols": [
+            "Any"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:53:15.881012"
+    },
+    "tests/test_countys.py": {
+      "filepath": "tests/test_countys.py",
+      "exports": [
+        "test_create_county",
+        "test_get_county",
+        "test_delete_county",
+        "test_list_counties",
+        "logger",
+        "test_update_county"
+      ],
+      "imports": [
+        {
+          "type": "import",
+          "module": "logging",
+          "symbols": [
+            "logging"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "uuid",
+          "symbols": [
+            "uuid"
+          ]
+        },
+        {
+          "type": "import",
+          "module": "pytest",
+          "symbols": [
+            "pytest"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "fastapi.testclient",
+          "symbols": [
+            "TestClient"
+          ]
+        },
+        {
+          "type": "from",
+          "module": "sqlalchemy.orm",
+          "symbols": [
+            "Session"
+          ]
+        }
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "quality_score": 100,
+      "built_at": "2026-05-21T21:53:24.994009"
+    }
+  }
+}

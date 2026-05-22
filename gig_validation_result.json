@@ -1,0 +1,2456 @@
+{
+  "gig_validator_version": "v25",
+  "project": "build_real_0521_2143",
+  "project_dir": "projects_workspace\\generated\\build_real_0521_2143",
+  "timestamp": "2026-05-22T02:59:43.218274+00:00",
+  "grade": "A+",
+  "score": 100,
+  "ready_to_deliver": true,
+  "fiverr_ready": true,
+  "recommendation": "Ready to deliver \u2014 all probes passed",
+  "hard_failures": [],
+  "failures": [],
+  "weights_breakdown": {
+    "server": 15,
+    "routes": 10,
+    "auth": 15,
+    "crud": 15,
+    "syntax": 3,
+    "pytest": 2,
+    "test_runner": 15,
+    "runtime_semantics": 5,
+    "domain": 20
+  },
+  "probes": {
+    "server": {
+      "passed": true,
+      "is_config_error": false,
+      "startup_time": 1.02,
+      "output": "INFO:     Started server process [35044]\n",
+      "errors": [],
+      "score": 20,
+      "detail": "Server started in 1.02s",
+      "port_used": 8765,
+      "max_score": 20
+    },
+    "routes": {
+      "passed": true,
+      "score": 15,
+      "max_score": 15,
+      "detail": "12/12 routes OK, 0 returned 500 (4 param-routes probed with safe values)",
+      "steps": [
+        {
+          "path": "/",
+          "probe_path": "/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/health",
+          "probe_path": "/health",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/auth/me",
+          "probe_path": "/auth/me",
+          "method": "GET",
+          "status": 401,
+          "passed": true
+        },
+        {
+          "path": "/company/",
+          "probe_path": "/company/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/contacts/",
+          "probe_path": "/contacts/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/contacts/{contact_id}",
+          "probe_path": "/contacts/1",
+          "method": "GET",
+          "note": "param-route probed with safe values \u2192 /contacts/1",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/counties/",
+          "probe_path": "/counties/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/counties/{county_id}",
+          "probe_path": "/counties/1",
+          "method": "GET",
+          "note": "param-route probed with safe values \u2192 /counties/1",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/countys/",
+          "probe_path": "/countys/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/countys/{county_id}",
+          "probe_path": "/countys/1",
+          "method": "GET",
+          "note": "param-route probed with safe values \u2192 /countys/1",
+          "status": 404,
+          "passed": true
+        },
+        {
+          "path": "/notifications/",
+          "probe_path": "/notifications/",
+          "method": "GET",
+          "status": 200,
+          "passed": true
+        },
+        {
+          "path": "/notifications/{notification_id}",
+          "probe_path": "/notifications/1",
+          "method": "GET",
+          "note": "param-route probed with safe values \u2192 /notifications/1",
+          "status": 200,
+          "passed": true
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "auth": {
+      "passed": true,
+      "score": 20,
+      "max_score": 20,
+      "detail": "Auth cycle complete: register\u2192login\u2192token\u2192protected",
+      "steps": [
+        {
+          "name": "REGISTER",
+          "method": "POST",
+          "path": "/auth/register",
+          "status": 201,
+          "body": {
+            "id": 3,
+            "email": "testuser_1779418790@gig-test.com"
+          },
+          "passed": true
+        },
+        {
+          "name": "LOGIN",
+          "method": "POST",
+          "path": "/auth/login",
+          "status": 200,
+          "body": {
+            "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlcl8xNzc5NDE4NzkwQGdpZy10ZXN0LmNvbSIsInVzZXJfaWQiOjMsImV4cCI6MTc3OTQyMDU5MX0.g2c82eVVSysl2iDkOaQzZyOkUblGRv_w0EqXYKTS2LA",
+            "token_type": "bearer"
+          },
+          "passed": true
+        },
+        {
+          "name": "PROTECTED",
+          "method": "GET",
+          "path": "/auth/me",
+          "status": 200,
+          "passed": true
+        }
+      ],
+      "failures": [],
+      "advisory": false,
+      "auth_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0dXNlcl8xNzc5NDE4NzkwQGdpZy10ZXN0LmNvbSIsInVzZXJfaWQiOjMsImV4cCI6MTc3OTQyMDU5MX0.g2c82eVVSysl2iDkOaQzZyOkUblGRv_w0EqXYKTS2LA"
+    },
+    "crud": {
+      "passed": true,
+      "score": 15,
+      "max_score": 15,
+      "detail": "3/3 resource(s) passed CRUD cycle",
+      "steps": [
+        {
+          "name": "CREATE",
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/contacts/",
+          "status": 201,
+          "body": {
+            "first_name": "Test First_Name",
+            "last_name": "Test Last_Name",
+            "email": "test@gig-validator.com",
+            "phone": "test_value",
+            "company_name": "Test Company_Name",
+            "role": "test_value",
+            "notes": "test_value",
+            "id": 3,
+            "created_at": "2026-05-22T02:59:51.256572"
+          },
+          "passed": true
+        },
+        {
+          "name": "LIST",
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/contacts/",
+          "status": 200,
+          "body": [
+            {
+              "first_name": "Test First_Name",
+              "last_name": "Test Last_Name",
+              "email": "test@gig-validator.com",
+              "phone": "test_value",
+              "company_name": "Test Company_Name",
+              "role": "test_value",
+              "notes": "test_value",
+              "id": 3,
+              "created_at": "2026-05-22T02:59:51.256572"
+            },
+            {
+              "first_name": "Test First_Name",
+              "last_name": "Test Last_Name",
+              "email": "test@gig-validator.com",
+              "phone": "test_value",
+              "company_name": "Test Company_Name",
+              "role": "test_value",
+              "notes": "test_value",
+              "id": 2,
+              "created_at": "2026-05-22T02:58:39.321425"
+            },
+            {
+              "first_name": "Test First_Name",
+              "last_name": "Test Last_Name",
+              "email": "test@gig-validator.com",
+              "phone": "test_value",
+              "company_name": "Test Company_Name",
+              "role": "test_value",
+              "notes": "test_value",
+              "id": 1,
+              "created_at": "2026-05-22T02:58:14.793137"
+            }
+          ],
+          "passed": true
+        },
+        {
+          "name": "GET_BY_ID",
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/contacts//3",
+          "status": 404,
+          "body": {
+            "detail": "Not Found"
+          },
+          "passed": true
+        },
+        {
+          "name": "DELETE",
+          "method": "DELETE",
+          "url": "http://127.0.0.1:8765/contacts//3",
+          "status": 404,
+          "body": {
+            "detail": "Not Found"
+          },
+          "passed": true
+        },
+        {
+          "name": "CREATE",
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/counties/",
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "closing_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "recording_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "transfer_tax_rate_pct"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "survey_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "home_warranty_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "simultaneous_issue_discount_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "int_parsing",
+                "loc": [
+                  "body",
+                  "owner_rate_table_id"
+                ],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/int_parsing"
+              },
+              {
+                "type": "int_parsing",
+                "loc": [
+                  "body",
+                  "lender_rate_table_id"
+                ],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/int_parsing"
+              },
+              {
+                "type": "bool_parsing",
+                "loc": [
+                  "body",
+                  "is_active"
+                ],
+                "msg": "Input should be a valid boolean, unable to interpret input",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/bool_parsing"
+              }
+            ]
+          },
+          "passed": true
+        },
+        {
+          "name": "LIST",
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/counties/",
+          "status": 200,
+          "body": [],
+          "passed": true
+        },
+        {
+          "name": "CREATE",
+          "method": "POST",
+          "url": "http://127.0.0.1:8765/countys/",
+          "status": 422,
+          "body": {
+            "detail": [
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "closing_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "recording_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "transfer_tax_rate_pct"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "survey_fee_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "home_warranty_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "decimal_parsing",
+                "loc": [
+                  "body",
+                  "simultaneous_issue_discount_flat"
+                ],
+                "msg": "Input should be a valid decimal",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/decimal_parsing"
+              },
+              {
+                "type": "int_parsing",
+                "loc": [
+                  "body",
+                  "owner_rate_table_id"
+                ],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/int_parsing"
+              },
+              {
+                "type": "int_parsing",
+                "loc": [
+                  "body",
+                  "lender_rate_table_id"
+                ],
+                "msg": "Input should be a valid integer, unable to parse string as an integer",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/int_parsing"
+              },
+              {
+                "type": "bool_parsing",
+                "loc": [
+                  "body",
+                  "is_active"
+                ],
+                "msg": "Input should be a valid boolean, unable to interpret input",
+                "input": "test_value",
+                "url": "https://errors.pydantic.dev/2.10/v/bool_parsing"
+              }
+            ]
+          },
+          "passed": true
+        },
+        {
+          "name": "LIST",
+          "method": "GET",
+          "url": "http://127.0.0.1:8765/countys/",
+          "status": 200,
+          "body": [],
+          "passed": true
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "syntax": {
+      "passed": true,
+      "score": 3,
+      "max_score": 3,
+      "detail": "All 96 .py files parse cleanly",
+      "steps": [],
+      "failures": [],
+      "advisory": false
+    },
+    "pytest": {
+      "passed": true,
+      "score": 2,
+      "max_score": 2,
+      "detail": "115 test(s) collected and ran (exit 0)",
+      "steps": [
+        {
+          "command": "C:\\Users\\barms\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest --collect-only -q --tb=short --no-header --override-ini=asyncio_mode=auto",
+          "exit_code": 0,
+          "collected": 115,
+          "errors": []
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "test_runner": {
+      "passed": true,
+      "score": 20,
+      "max_score": 20,
+      "detail": "ALL 100 test(s) PASSED \u2713",
+      "steps": [
+        {
+          "command": "C:\\Users\\barms\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/ -v --tb=short --no-header --override-ini=asyncio_mode=auto --override-ini=asyncio_default_fixture_loop_scope=function -x",
+          "exit_code": 0,
+          "passed": 100,
+          "failed": 0,
+          "errors": 0,
+          "output_tail": "st_shared.py: 1 warning\n  c:\\Jarvis\\projects_workspace\\generated\\build_real_0521_2143\\auth\\jwt_handler.py:51: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n    expire = datetime.utcnow() + (\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=============== 100 passed, 15 skipped, 321 warnings in 17.60s ================"
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "runtime_semantics": {
+      "passed": true,
+      "score": 5,
+      "max_score": 5,
+      "detail": "All 96 files clean \u2014 no undefined names, sync/async issues, or dead guards",
+      "steps": [],
+      "failures": [],
+      "advisory": false
+    },
+    "file_validation": {
+      "passed": true,
+      "score": 85,
+      "detail": "All 96 files avg 85/100",
+      "advisory": true,
+      "per_file": {
+        "config.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "database.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "main.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "alembic/env.py": {
+          "score": 85,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "alembic/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "auth/dependencies.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "auth/jwt_handler.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "auth/schemas.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "auth/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "models/base.py": {
+          "score": 85,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/company.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/contact.py": {
+          "score": 81,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 2,
+            "error_handling": 0
+          }
+        },
+        "models/county.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/notification.py": {
+          "score": 79,
+          "grade": "C",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 2,
+            "error_handling": 0
+          }
+        },
+        "models/order.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/rate_bracket.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/rate_table.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/reissue_discount.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/saved_sheet.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 0,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "models/uploads.py": {
+          "score": 79,
+          "grade": "C",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 2,
+            "error_handling": 0
+          }
+        },
+        "models/user.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "models/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/auth.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/calculators.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 2,
+            "error_handling": 4
+          }
+        },
+        "routes/company.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/contacts.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/counties.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/countys.py": {
+          "score": 85,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "routes/notifications.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/orders.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/rate_brackets.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/rate_tables.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/reissue_discounts.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/saved_sheets.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/saved_sheets_export.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/shared.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/uploads.py": {
+          "score": 89,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "routes/ws.py": {
+          "score": 86,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "routes/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "schemas/base.py": {
+          "score": 84,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/calculator.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 2,
+            "error_handling": 0
+          }
+        },
+        "schemas/company.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/contact.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/county.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/notification.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/order.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/rate_bracket.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/rate_table.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/reissue_discount.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/saved_sheet.py": {
+          "score": 82,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "schemas/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "services/company_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/contact_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/county_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/email_service.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/notification_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/order_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/pdf_generator.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/rate_bracket_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/rate_table_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/reissue_discount_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/saved_sheet_service.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "services/title_calculator.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 2,
+            "error_handling": 2
+          }
+        },
+        "services/user_service.py": {
+          "score": 84,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 3,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "services/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "storage/s3_client.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "storage/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "tests/conftest.py": {
+          "score": 85,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_api.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "tests/test_auth.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "tests/test_calculators.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_calculator_properties.py": {
+          "score": 81,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_company.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_company_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_contacts.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_contact_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_counties.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_countys.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_county_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_health.py": {
+          "score": 87,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 4,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "tests/test_notifications.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_notification_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_orders.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_order_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_rate_brackets.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_rate_bracket_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_rate_tables.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_rate_table_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_reissue_discounts.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_reissue_discount_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_saved_sheets.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_saved_sheet_contract.py": {
+          "score": 80,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 0,
+            "type_hints": 2,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/test_shared.py": {
+          "score": 83,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 2,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 0
+          }
+        },
+        "tests/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        },
+        "websocket/manager.py": {
+          "score": 88,
+          "grade": "B",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 2
+          }
+        },
+        "websocket/__init__.py": {
+          "score": 90,
+          "grade": "A",
+          "deliverable": true,
+          "details": {
+            "syntax": true,
+            "imports": true,
+            "structure": 15,
+            "style": 5,
+            "type_hints": 3,
+            "docs": 3,
+            "error_handling": 4
+          }
+        }
+      },
+      "failed_files": [],
+      "files_checked": 96,
+      "steps": [],
+      "failures": []
+    },
+    "security": {
+      "passed": true,
+      "score": 10,
+      "detail": "No critical issues (25 advisory)",
+      "advisory": true,
+      "issues_found": 25,
+      "critical_count": 0,
+      "high_count": 0,
+      "medium_count": 24,
+      "low_count": 1,
+      "files_scanned": 96,
+      "issues": [
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "config.py",
+          "line": 17,
+          "snippet": "`JWT_SECRET: str = ...` produces AnnAssign AST nodes which the"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "config.py",
+          "line": 18,
+          "snippet": "IMPORT-GRAPH scanner misses (it only finds Assign nodes)."
+        },
+        {
+          "severity": "medium",
+          "category": "cors_wildcard",
+          "description": "CORS allows all origins \u2014 restrict in production",
+          "file": "main.py",
+          "line": 88,
+          "snippet": "allow_origins=[\"*\"],"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "alembic/env.py",
+          "line": 7,
+          "snippet": "2. DATABASE_URL from env var overrides alembic.ini \u2014 required for autogenerate"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "alembic/env.py",
+          "line": 8,
+          "snippet": "3. sys.path includes project root so model imports always work in subprocesses"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "auth/dependencies.py",
+          "line": 154,
+          "snippet": "Universal: degrades gracefully if field does not exist on model."
+        },
+        {
+          "severity": "medium",
+          "category": "sensitive_logging",
+          "description": "Sensitive data may be logged",
+          "file": "routes/auth.py",
+          "line": 37,
+          "snippet": "def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "routes/uploads.py",
+          "line": 5,
+          "snippet": "Provides file upload/download via S3-compatible storage + a safe uploads"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "routes/uploads.py",
+          "line": 6,
+          "snippet": "resource CRUD that degrades gracefully when no Uploads ORM model exists."
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "routes/ws.py",
+          "line": 3,
+          "snippet": "Provides:"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "schemas/base.py",
+          "line": 28,
+          "snippet": "Provides ORM compatibility (from_attributes) for SQLAlchemy result serialisation."
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/conftest.py",
+          "line": 113,
+          "snippet": "app.dependency_overrides[get_db] = override_get_db"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/conftest.py",
+          "line": 116,
+          "snippet": "app.dependency_overrides.clear()"
+        },
+        {
+          "severity": "medium",
+          "category": "sensitive_logging",
+          "description": "Sensitive data may be logged",
+          "file": "tests/test_auth.py",
+          "line": 8,
+          "snippet": "3. Login uses form data (username= field) -- matches OAuth2PasswordRequestForm"
+        },
+        {
+          "severity": "medium",
+          "category": "sensitive_logging",
+          "description": "Sensitive data may be logged",
+          "file": "tests/test_auth.py",
+          "line": 44,
+          "snippet": "response = client.post(\"/auth/login\", data={\"username\": reg_email, \"password\": reg_pass})"
+        },
+        {
+          "severity": "medium",
+          "category": "sensitive_logging",
+          "description": "Sensitive data may be logged",
+          "file": "tests/test_auth.py",
+          "line": 47,
+          "snippet": "response = client.post(\"/auth/login\", data={\"username\": reg_email, \"password\": reg_pass})"
+        },
+        {
+          "severity": "medium",
+          "category": "sensitive_logging",
+          "description": "Sensitive data may be logged",
+          "file": "tests/test_auth.py",
+          "line": 60,
+          "snippet": "\"/auth/login\", data={\"username\": reg_email, \"password\": reg_pass}"
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_calculators.py",
+          "line": 152,
+          "snippet": "\"\"\"FHA loan includes UFMIP line item.\"\"\""
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_calculator_properties.py",
+          "line": 62,
+          "snippet": "\"\"\"Response includes line_items list.\"\"\""
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_calculator_properties.py",
+          "line": 285,
+          "snippet": "\"\"\"Response includes non-empty line_items list.\"\"\""
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_calculator_properties.py",
+          "line": 348,
+          "snippet": "\"\"\"Response includes non-empty line_items list.\"\"\""
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_health.py",
+          "line": 9,
+          "snippet": "structure only \u2014 never hardcodes a single status string."
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "tests/test_shared.py",
+          "line": 4,
+          "snippet": "Verifies public share route works without auth and includes branding."
+        },
+        {
+          "severity": "medium",
+          "category": "weak_crypto",
+          "description": "Weak cryptographic algorithm",
+          "file": "websocket/manager.py",
+          "line": 5,
+          "snippet": "Provides the WebSocketManager class and get_manager() singleton factory."
+        },
+        {
+          "severity": "low",
+          "category": "missing_rate_limit",
+          "description": "No rate limiting detected",
+          "file": "project",
+          "line": 0,
+          "snippet": ""
+        }
+      ],
+      "steps": [],
+      "failures": []
+    },
+    "frontend": {
+      "passed": true,
+      "score": 10,
+      "max_score": 10,
+      "detail": "backend-only gig \u2014 frontend probe skipped",
+      "checks": {},
+      "skipped": true
+    },
+    "delivery": {
+      "passed": true,
+      "score": 0,
+      "detail": "Delivery files already present",
+      "advisory": true,
+      "files_created": [],
+      "steps": [],
+      "failures": []
+    },
+    "syntax_repair": {
+      "detail": "No syntax errors detected before probes",
+      "repaired": 0
+    },
+    "domain": {
+      "passed": true,
+      "score": 20,
+      "max_score": 20,
+      "detail": "7/7 domain probe(s) passed (100% pass rate)",
+      "steps": [
+        {
+          "name": "Rate Tables List",
+          "method": "GET",
+          "path": "/rate_tables/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200
+              ],
+              "actual": 200,
+              "passed": true
+            },
+            {
+              "check": "is_list",
+              "passed": true
+            }
+          ],
+          "status": 200
+        },
+        {
+          "name": "Counties List",
+          "method": "GET",
+          "path": "/counties/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200
+              ],
+              "actual": 200,
+              "passed": true
+            },
+            {
+              "check": "is_list",
+              "passed": true
+            }
+          ],
+          "status": 200
+        },
+        {
+          "name": "Create Notification",
+          "method": "POST",
+          "path": "/notifications/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200,
+                201
+              ],
+              "actual": 201,
+              "passed": true
+            },
+            {
+              "check": "has_field:id",
+              "passed": true
+            },
+            {
+              "check": "has_field:title",
+              "passed": true
+            },
+            {
+              "check": "has_field:status",
+              "passed": true
+            }
+          ],
+          "status": 201
+        },
+        {
+          "name": "Health Endpoint",
+          "method": "GET",
+          "path": "/health/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200,
+                422
+              ],
+              "actual": 200,
+              "passed": true
+            }
+          ],
+          "status": 200
+        },
+        {
+          "name": "Orders List",
+          "method": "GET",
+          "path": "/orders/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200
+              ],
+              "actual": 200,
+              "passed": true
+            },
+            {
+              "check": "is_list",
+              "passed": true
+            }
+          ],
+          "status": 200
+        },
+        {
+          "name": "Rate Brackets List",
+          "method": "GET",
+          "path": "/rate_brackets/",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200
+              ],
+              "actual": 200,
+              "passed": true
+            },
+            {
+              "check": "is_list",
+              "passed": true
+            }
+          ],
+          "status": 200
+        },
+        {
+          "name": "Seller Net Sheet Calculator",
+          "method": "POST",
+          "path": "/calculators/seller-net-sheet",
+          "passed": true,
+          "checks": [
+            {
+              "check": "status_code",
+              "expected": [
+                200,
+                201,
+                400,
+                422
+              ],
+              "actual": 400,
+              "passed": true
+            }
+          ],
+          "status": 400
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "integration": {
+      "passed": true,
+      "score": 0,
+      "max_score": 0,
+      "detail": "Integration: 1 tests run, all passed",
+      "steps": [
+        {
+          "name": "AUTH-ME-CONTRACT",
+          "status": 200,
+          "passed": true,
+          "fields_found": [
+            "id",
+            "email",
+            "is_active"
+          ]
+        }
+      ],
+      "failures": [],
+      "advisory": false
+    },
+    "db_preflight": {
+      "tables_found": 10,
+      "recovered": false,
+      "error": null
+    }
+  },
+  "file_verdicts": {
+    "config.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "database.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "main.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "auth/dependencies.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "auth/jwt_handler.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "auth/schemas.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "auth/__init__.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "models/base.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "models/uploads.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "routes/auth.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "routes/countys.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "routes/uploads.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "routes/ws.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "schemas/base.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "storage/s3_client.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "storage/__init__.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/conftest.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_api.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_auth.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_calculator_properties.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_company_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_contact_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_county_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_health.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_notification_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_order_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_rate_bracket_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_rate_table_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_reissue_discount_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/test_saved_sheet_contract.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "tests/__init__.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "websocket/manager.py": {
+      "verdict": "clean",
+      "reasons": []
+    },
+    "websocket/__init__.py": {
+      "verdict": "clean",
+      "reasons": []
+    }
+  },
+  "verdict_summary": {
+    "total_ai_files": 33,
+    "clean": 33,
+    "implicated": 0,
+    "locked_templates": 61,
+    "cache_eligible": 33
+  }
+}

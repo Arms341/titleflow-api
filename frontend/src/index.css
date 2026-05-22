@@ -1,0 +1,41 @@
+/* JARVIS App - Global Styles */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand colors are set dynamically via BrandContext.tsx from /company endpoint.
+   CSS vars --color-brand and --color-brand-secondary are injected at runtime.
+   Do NOT use Tailwind @apply with brand colors — they are not known at build time. */
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Focus styles for accessibility — use generic blue, not brand color */
+*:focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500;
+}

@@ -1,0 +1,559 @@
+{
+  "files_checked": 86,
+  "files_passed": 79,
+  "files_failed": 7,
+  "total_violations": 7,
+  "file_results": [
+    {
+      "file": "config.py",
+      "role": "config_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "database.py",
+      "role": "database_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "main.py",
+      "role": "entrypoint",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "alembic\\env.py",
+      "role": "unknown",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "alembic\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "auth\\dependencies.py",
+      "role": "auth_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "auth\\jwt_handler.py",
+      "role": "auth_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "auth\\schemas.py",
+      "role": "auth_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "auth\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\base.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\company.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\contact.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\county.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\notification.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\order.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\rate_bracket.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\rate_table.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\reissue_discount.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\saved_sheet.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\uploads.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\user.py",
+      "role": "orm_model",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "models\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\auth.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\calculators.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\company.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\contacts.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\counties.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\countys.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\notifications.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\orders.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\rate_brackets.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\rate_tables.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\reissue_discounts.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\saved_sheets.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\saved_sheets_export.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\shared.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\uploads.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\ws.py",
+      "role": "route_handler",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "routes\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\base.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\calculator.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\company.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\contact.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\county.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\notification.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\order.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\rate_bracket.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\rate_table.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\reissue_discount.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\saved_sheet.py",
+      "role": "schema_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "schemas\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\company_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\contact_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\county_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\email_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\notification_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\order_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\pdf_generator.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\rate_bracket_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\rate_table_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\reissue_discount_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\saved_sheet_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\title_calculator.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\user_service.py",
+      "role": "service_layer",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "services\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "storage\\s3_client.py",
+      "role": "storage_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "storage\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\conftest.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_api.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_auth.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_calculators.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_company.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_contacts.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_counties.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_countys.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_health.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_notifications.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_orders.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_rate_brackets.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_rate_tables.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_reissue_discounts.py",
+      "role": "test_harness",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "tests\\test_saved_sheets.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\test_shared.py",
+      "role": "test_harness",
+      "violations": [
+        {
+          "rule": "TEST-NO-FRAMEWORK",
+          "message": "Test file imports neither pytest nor unittest \u2014 tests may not be discovered."
+        }
+      ],
+      "passed": false
+    },
+    {
+      "file": "tests\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "websocket\\manager.py",
+      "role": "websocket_module",
+      "violations": [],
+      "passed": true
+    },
+    {
+      "file": "websocket\\__init__.py",
+      "role": "package_init",
+      "violations": [],
+      "passed": true
+    }
+  ]
+}

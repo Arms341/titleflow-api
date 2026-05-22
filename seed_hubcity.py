@@ -1,6 +1,6 @@
 """
 TitleFlow — Seed Script for Hub City Title Company
-Run after tables are created to populate admin, rate tables, and county data.
+Run after tables are created to populate admin, company branding, rate tables, and county data.
 
 Usage:
   python3 seed_hubcity.py
@@ -17,7 +17,7 @@ def seed():
     db = SessionLocal()
     try:
         # =====================================================================
-        # ADMIN USER — Lee at Hub City Title
+        # ADMIN USER
         # =====================================================================
         from models.user import User
 
@@ -35,7 +35,6 @@ def seed():
                 role="admin",
                 is_active=True,
             )
-            # Set approval_status if the field exists
             if hasattr(User, "approval_status"):
                 admin.approval_status = "active"
             if hasattr(User, "is_approved"):
@@ -45,8 +44,43 @@ def seed():
             print(f"Admin user created: {admin_email}")
 
         # =====================================================================
+        # COMPANY BRANDING — Hub City Title
+        # =====================================================================
+        from models.company import Company
+
+        existing_company = db.query(Company).first()
+        if existing_company:
+            # Update existing with Hub City branding if still default
+            if existing_company.company_name in (None, "Title Company", ""):
+                existing_company.company_name = "Hub City Title"
+                existing_company.primary_color = "#1e3a8a"
+                existing_company.secondary_color = "#f59e0b"
+                existing_company.tagline = "Your West Texas Title Experts"
+                existing_company.disclaimer_text = "These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary."
+                existing_company.order_submission_email = admin_email
+                db.commit()
+                print("Updated company branding to Hub City Title.")
+            else:
+                print(f"Company already configured: {existing_company.company_name}. Skipping.")
+        else:
+            company = Company(
+                company_name="Hub City Title",
+                primary_color="#1e3a8a",
+                secondary_color="#f59e0b",
+                phone="(806) 555-0100",
+                email="info@hubcitytitle.com",
+                website="https://hubcitytitle.com",
+                address="Lubbock, TX",
+                tagline="Your West Texas Title Experts",
+                disclaimer_text="These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary.",
+                order_submission_email=admin_email,
+            )
+            db.add(company)
+            db.commit()
+            print("Company branding created: Hub City Title")
+
+        # =====================================================================
         # RATE TABLES — Texas TDI 2026 Promulgated Rates
-        # PLACEHOLDER brackets — replace with Lee's actual rate card
         # =====================================================================
         from models.rate_table import RateTable
         from models.rate_bracket import RateBracket
@@ -56,64 +90,20 @@ def seed():
         if existing_rt:
             print("Rate tables already seeded. Skipping.")
         else:
-            # Owner's Policy
-            owner_table = RateTable(
-                name="TX Owner's Policy 2026",
-                state="TX",
-                table_type="owner_policy",
-                effective_date="2026-03-01",
-                is_active=True
-            )
+            owner_table = RateTable(name="TX Owner's Policy 2026", state="TX", table_type="owner_policy", effective_date="2026-03-01", is_active=True)
             db.add(owner_table)
             db.flush()
+            for b in [("0","100000","5.75"),("100001","500000","5.00"),("500001","1000000","4.50"),("1000001","99999999","4.00")]:
+                db.add(RateBracket(rate_table_id=owner_table.id, min_value=Decimal(b[0]), max_value=Decimal(b[1]), rate_per_thousand=Decimal(b[2])))
 
-            owner_brackets = [
-                {"min_value": "0", "max_value": "100000", "rate_per_thousand": "5.75"},
-                {"min_value": "100001", "max_value": "500000", "rate_per_thousand": "5.00"},
-                {"min_value": "500001", "max_value": "1000000", "rate_per_thousand": "4.50"},
-                {"min_value": "1000001", "max_value": "99999999", "rate_per_thousand": "4.00"},
-            ]
-            for b in owner_brackets:
-                db.add(RateBracket(
-                    rate_table_id=owner_table.id,
-                    min_value=Decimal(b["min_value"]),
-                    max_value=Decimal(b["max_value"]),
-                    rate_per_thousand=Decimal(b["rate_per_thousand"])
-                ))
-
-            # Lender's Policy
-            lender_table = RateTable(
-                name="TX Lender's Policy 2026",
-                state="TX",
-                table_type="lender_policy",
-                effective_date="2026-03-01",
-                is_active=True
-            )
+            lender_table = RateTable(name="TX Lender's Policy 2026", state="TX", table_type="lender_policy", effective_date="2026-03-01", is_active=True)
             db.add(lender_table)
             db.flush()
+            for b in [("0","100000","5.25"),("100001","500000","4.50"),("500001","1000000","4.00"),("1000001","99999999","3.50")]:
+                db.add(RateBracket(rate_table_id=lender_table.id, min_value=Decimal(b[0]), max_value=Decimal(b[1]), rate_per_thousand=Decimal(b[2])))
 
-            lender_brackets = [
-                {"min_value": "0", "max_value": "100000", "rate_per_thousand": "5.25"},
-                {"min_value": "100001", "max_value": "500000", "rate_per_thousand": "4.50"},
-                {"min_value": "500001", "max_value": "1000000", "rate_per_thousand": "4.00"},
-                {"min_value": "1000001", "max_value": "99999999", "rate_per_thousand": "3.50"},
-            ]
-            for b in lender_brackets:
-                db.add(RateBracket(
-                    rate_table_id=lender_table.id,
-                    min_value=Decimal(b["min_value"]),
-                    max_value=Decimal(b["max_value"]),
-                    rate_per_thousand=Decimal(b["rate_per_thousand"])
-                ))
-
-            # Reissue Discounts
-            for years, pct in [(1, "30"), (2, "30"), (3, "25"), (4, "20"), (5, "15")]:
-                db.add(ReissueDiscount(
-                    rate_table_id=owner_table.id,
-                    years_since_prior_policy=years,
-                    discount_pct=Decimal(pct)
-                ))
-
+            for years, pct in [(1,"30"),(2,"30"),(3,"25"),(4,"20"),(5,"15")]:
+                db.add(ReissueDiscount(rate_table_id=owner_table.id, years_since_prior_policy=years, discount_pct=Decimal(pct)))
             db.commit()
             print("Rate tables and brackets seeded.")
 
@@ -126,33 +116,26 @@ def seed():
         if existing_county:
             print("Counties already seeded. Skipping.")
         else:
-            counties = [
-                {"state": "TX", "county_name": "Lubbock", "closing_fee_flat": "600.00", "recording_fee_flat": "33.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "500.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Hockley", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "500.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Crosby", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "475.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Lynn", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "475.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Garza", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "475.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Terry", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "475.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
-                {"state": "TX", "county_name": "Cochran", "closing_fee_flat": "600.00", "recording_fee_flat": "30.00", "transfer_tax_rate_pct": "0.0000", "survey_fee_flat": "475.00", "home_warranty_flat": "550.00", "simultaneous_issue_discount_flat": "100.00"},
+            counties_data = [
+                ("Lubbock", "600.00", "33.00", "500.00"),
+                ("Hockley", "600.00", "30.00", "500.00"),
+                ("Crosby", "600.00", "30.00", "475.00"),
+                ("Lynn", "600.00", "30.00", "475.00"),
+                ("Garza", "600.00", "30.00", "475.00"),
+                ("Terry", "600.00", "30.00", "475.00"),
+                ("Cochran", "600.00", "30.00", "475.00"),
             ]
-
-            for c in counties:
+            for name, closing, recording, survey in counties_data:
                 db.add(County(
-                    state=c["state"],
-                    county_name=c["county_name"],
-                    closing_fee_flat=Decimal(c["closing_fee_flat"]),
-                    recording_fee_flat=Decimal(c["recording_fee_flat"]),
-                    transfer_tax_rate_pct=Decimal(c["transfer_tax_rate_pct"]),
-                    survey_fee_flat=Decimal(c["survey_fee_flat"]),
-                    home_warranty_flat=Decimal(c["home_warranty_flat"]),
-                    simultaneous_issue_discount_flat=Decimal(c["simultaneous_issue_discount_flat"]),
-                    owner_rate_table_id=owner_table.id if 'owner_table' in dir() else 1,
-                    lender_rate_table_id=lender_table.id if 'lender_table' in dir() else 2,
-                    is_active=True,
-                    effective_date="2026-03-01"
+                    state="TX", county_name=name,
+                    closing_fee_flat=Decimal(closing), recording_fee_flat=Decimal(recording),
+                    transfer_tax_rate_pct=Decimal("0.0000"), survey_fee_flat=Decimal(survey),
+                    home_warranty_flat=Decimal("550.00"), simultaneous_issue_discount_flat=Decimal("100.00"),
+                    owner_rate_table_id=1, lender_rate_table_id=2,
+                    is_active=True, effective_date="2026-03-01"
                 ))
             db.commit()
-            print(f"Seeded {len(counties)} West Texas counties.")
+            print(f"Seeded {len(counties_data)} West Texas counties.")
 
         print("Seed complete.")
 

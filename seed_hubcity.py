@@ -51,11 +51,16 @@ def seed():
         existing_company = db.query(Company).first()
         if existing_company:
             # Update existing with Hub City branding if still default
-            if existing_company.company_name in (None, "Title Company", ""):
-                existing_company.company_name = "Hub City Title"
+            if existing_company.company_name in (None, "Title Company", "", "Hub City Title"):
+                existing_company.company_name = "HUB City Title"
+                existing_company.logo_url = "https://www.hubcitytitle.com/uploads/8/1/1/8/81183436/published/2534139.jpg?1497909780"
                 existing_company.primary_color = "#1e3a8a"
                 existing_company.secondary_color = "#f59e0b"
-                existing_company.tagline = "Your West Texas Title Experts"
+                existing_company.phone = "(806) 412-1234"
+                existing_company.email = "info@hubcitytitle.com"
+                existing_company.website = "https://www.hubcitytitle.com"
+                existing_company.address = "4415 66th Street, Suite 100, Lubbock, TX 79414"
+                existing_company.tagline = "No Bull. Just Title."
                 existing_company.disclaimer_text = "These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary."
                 existing_company.order_submission_email = admin_email
                 db.commit()
@@ -64,14 +69,15 @@ def seed():
                 print(f"Company already configured: {existing_company.company_name}. Skipping.")
         else:
             company = Company(
-                company_name="Hub City Title",
+                company_name="HUB City Title",
+                logo_url="https://www.hubcitytitle.com/uploads/8/1/1/8/81183436/published/2534139.jpg?1497909780",
                 primary_color="#1e3a8a",
                 secondary_color="#f59e0b",
-                phone="(806) 555-0100",
+                phone="(806) 412-1234",
                 email="info@hubcitytitle.com",
-                website="https://hubcitytitle.com",
-                address="Lubbock, TX",
-                tagline="Your West Texas Title Experts",
+                website="https://www.hubcitytitle.com",
+                address="4415 66th Street, Suite 100, Lubbock, TX 79414",
+                tagline="No Bull. Just Title.",
                 disclaimer_text="These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary.",
                 order_submission_email=admin_email,
             )

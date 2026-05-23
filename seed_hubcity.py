@@ -50,23 +50,20 @@ def seed():
 
         existing_company = db.query(Company).first()
         if existing_company:
-            # Update existing with Hub City branding if still default
-            if existing_company.company_name in (None, "Title Company", "", "Hub City Title"):
-                existing_company.company_name = "HUB City Title"
-                existing_company.logo_url = "https://www.hubcitytitle.com/uploads/8/1/1/8/81183436/published/2534139.jpg?1497909780"
-                existing_company.primary_color = "#1e3a8a"
-                existing_company.secondary_color = "#f59e0b"
-                existing_company.phone = "(806) 412-1234"
-                existing_company.email = "info@hubcitytitle.com"
-                existing_company.website = "https://www.hubcitytitle.com"
-                existing_company.address = "4415 66th Street, Suite 100, Lubbock, TX 79414"
-                existing_company.tagline = "No Bull. Just Title."
-                existing_company.disclaimer_text = "These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary."
-                existing_company.order_submission_email = admin_email
-                db.commit()
-                print("Updated company branding to Hub City Title.")
-            else:
-                print(f"Company already configured: {existing_company.company_name}. Skipping.")
+            # Always update to Hub City branding
+            existing_company.company_name = "HUB City Title"
+            existing_company.logo_url = "https://www.hubcitytitle.com/uploads/8/1/1/8/81183436/published/2534139.jpg?1497909780"
+            existing_company.primary_color = "#0f172a"
+            existing_company.secondary_color = "#f59e0b"
+            existing_company.phone = "(806) 412-1234"
+            existing_company.email = "info@hubcitytitle.com"
+            existing_company.website = "https://www.hubcitytitle.com"
+            existing_company.address = "4415 66th Street, Suite 100, Lubbock, TX 79414"
+            existing_company.tagline = "No Bull. Just Title."
+            existing_company.disclaimer_text = "These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary."
+            existing_company.order_submission_email = admin_email
+            db.commit()
+            print("Updated company branding to HUB City Title.")
         else:
             company = Company(
                 company_name="HUB City Title",

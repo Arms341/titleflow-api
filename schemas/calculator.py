@@ -80,9 +80,25 @@ class BuyerEstimateInput(BaseModel):
     closing_date: Optional[date] = None
     annual_property_taxes: Decimal = Decimal("0")
     annual_homeowners_insurance: Decimal = Decimal("1200")
-    months_insurance_prepaid: int = 3
-    months_tax_escrow: int = 3
+    months_insurance_prepaid: int = 14
+    months_tax_escrow: int = 4
     seller_paid_closing_costs: Decimal = Decimal("0")
+    # Lender fees
+    misc_lender_fees: Decimal = Decimal("1100")
+    appraisal_fee: Decimal = Decimal("450")
+    credit_report_fee: Decimal = Decimal("40")
+    # Inspections
+    survey_fee: Decimal = Decimal("500")
+    pest_inspection_fee: Decimal = Decimal("100")
+    home_inspection_fee: Decimal = Decimal("400")
+    # Title endorsements
+    escrow_fee: Decimal = Decimal("250")
+    doc_prep_buyer: Decimal = Decimal("225")
+    t19_endorsement: Decimal = Decimal("80.99")
+    survey_cover_endorsement: Decimal = Decimal("99.15")
+    t17_endorsement: Decimal = Decimal("25")
+    t36_endorsement: Decimal = Decimal("25")
+    t30_endorsement: Decimal = Decimal("25")
     save: bool = False
     property_address: Optional[str] = None
     client_name: Optional[str] = None
@@ -96,6 +112,11 @@ class BuyerEstimateResult(BaseModel):
     loan_amount: Decimal
     total_closing_costs: Decimal
     lender_title_premium: Decimal
+    monthly_payment: Optional[Decimal] = None
+    monthly_pi: Optional[Decimal] = None
+    monthly_taxes: Optional[Decimal] = None
+    monthly_insurance: Optional[Decimal] = None
+    monthly_pmi: Optional[Decimal] = None
     line_items: List[LineItem] = []
     saved_sheet_id: Optional[int] = None
     order_ready: bool = True

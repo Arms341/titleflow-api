@@ -241,66 +241,133 @@ class TitleCalculatorService:
             is_cash = lt == "cash"
             dp = pp - la if not is_cash else pp
 
+            # Title fees
             ltp = ZERO
             if not is_cash and county.lender_rate_table_id is not None and la > ZERO:
                 ltp = rate.get_title_premium(la, county.lender_rate_table_id, db=db)
             cf = _to_decimal(county.closing_fee_flat) / Decimal("2")
             rf = _to_decimal(county.recording_fee_flat)
-            of_ = la * ORIGINATION_RATE if not is_cash else ZERO
-            af = APPRAISAL_FEE if not is_cash else ZERO
-            cr = CREDIT_REPORT_FEE if not is_cash else ZERO
-            fc = FLOOD_CERT_FEE if not is_cash else ZERO
+            escrow_fee = _to_decimal(data.escrow_fee)
+            doc_prep = _to_decimal(data.doc_prep_buyer)
+
+            # Title endorsements
+            t19 = _to_decimal(data.t19_endorsement) if not is_cash else ZERO
+            survey_cover = _to_decimal(data.survey_cover_endorsement) if not is_cash else ZERO
+            t17 = _to_decimal(data.t17_endorsement) if not is_cash else ZERO
+            t36 = _to_decimal(data.t36_endorsement) if not is_cash else ZERO
+            t30 = _to_decimal(data.t30_endorsement) if not is_cash else ZERO
+
+            # Lender fees
+            misc_lender = _to_decimal(data.misc_lender_fees) if not is_cash else ZERO
+            af = _to_decimal(data.appraisal_fee) if not is_cash else ZERO
+            cr = _to_decimal(data.credit_report_fee) if not is_cash else ZERO
+
+            # Inspections
+            survey = _to_decimal(data.survey_fee)
+            pest = _to_decimal(data.pest_inspection_fee)
+            home_insp = _to_decimal(data.home_inspection_fee)
+
+            # Government/loan fees
             fha = la * FHA_UFMIP_RATE if lt == "fha" else ZERO
             va = la * VA_FUNDING_FEE_RATE if lt == "va" else ZERO
+
+            # Prepaids
             pi = ZERO
             if not is_cash and la > ZERO:
                 pi = (la * ir / Decimal("100") / Decimal("365")) * Decimal("15")
             pins = (ai / Decimal("12")) * Decimal(mi)
             tesc = (at / Decimal("12")) * Decimal(mt)
-            iesc = (ai / Decimal("12")) * Decimal("2")
 
-            tcc = ltp + cf + rf + of_ + af + cr + fc + fha + va + TITLE_SEARCH_FEE + DOC_PREP_FEE + TAX_CERT_FEE + E_RECORDING_FEE_BUYER + pi
-            ctc = dp + tcc + pins + tesc + iesc - sc
+            # Total closing costs (fixed fees + title + endorsements + lender)
+            tcc = (ltp + cf + rf + escrow_fee + doc_prep
+                   + t19 + survey_cover + t17 + t36 + t30
+                   + misc_lender + af + cr + fha + va
+                   + TITLE_SEARCH_FEE + TAX_CERT_FEE + E_RECORDING_FEE_BUYER)
 
-            items: List[LineItem] = [LineItem(label="Down Payment", amount=_round_cents(dp), category="down_payment")]
+            # Cash to close = down + closing + prepaids + inspections - seller credit
+            ctc = dp + tcc + pi + pins + tesc + survey + pest + home_insp - sc
+
+            # Monthly payment breakdown
+            monthly_pi = _monthly_payment(la, ir, 30) if not is_cash and la > ZERO else ZERO
+            monthly_taxes = at / Decimal("12")
+            monthly_ins = ai / Decimal("12")
+            # PMI for conventional with LTV > 80%
+            ltv_pct = (la / pp * Decimal("100")) if pp > ZERO else ZERO
+            monthly_pmi = ZERO
+            if lt == "conventional" and ltv_pct > Decimal("80") and la > ZERO:
+                monthly_pmi = la * Decimal("0.0045") / Decimal("12")  # ~0.45% annual PMI
+            total_monthly = monthly_pi + monthly_taxes + monthly_ins + monthly_pmi
+
+            # Build line items
+            items: List[LineItem] = []
+
+            # Prepaids
+            if pi > ZERO:
+                items.append(LineItem(label="Prepaid Interest (15 days)", amount=_round_cents(pi), category="prepaid"))
+            items.append(LineItem(label=f"Prepaid Insurance ({mi} mo)", amount=_round_cents(pins), category="prepaid"))
+            items.append(LineItem(label=f"Tax Escrow ({mt} mo)", amount=_round_cents(tesc), category="prepaid"))
+
+            # Title fees
+            items.extend([
+                LineItem(label="Lender's Title Policy", amount=_round_cents(ltp), category="title"),
+                LineItem(label="Escrow Fee", amount=_round_cents(escrow_fee), category="title"),
+            ])
+            if t19 > ZERO:
+                items.append(LineItem(label="T-19 Endorsement", amount=_round_cents(t19), category="title"))
+            if survey_cover > ZERO:
+                items.append(LineItem(label="Survey Cover Endorsement", amount=_round_cents(survey_cover), category="title"))
+            if t17 > ZERO:
+                items.append(LineItem(label="Mortgagee's T-17 Endorsement", amount=_round_cents(t17), category="title"))
+            if t36 > ZERO:
+                items.append(LineItem(label="Mortgagee's T-36 Endorsement", amount=_round_cents(t36), category="title"))
+            if t30 > ZERO:
+                items.append(LineItem(label="Mortgagee's T-30 Endorsement", amount=_round_cents(t30), category="title"))
+            items.append(LineItem(label="Doc Prep", amount=_round_cents(doc_prep), category="title"))
+
+            # Lender fees
             if not is_cash:
                 items.extend([
-                    LineItem(label="Origination Fee (1%)", amount=_round_cents(of_), category="lender"),
-                    LineItem(label="Appraisal Fee", amount=_round_cents(af), category="lender"),
+                    LineItem(label="Misc. Lender Fees", amount=_round_cents(misc_lender), category="lender"),
+                    LineItem(label="Appraisal", amount=_round_cents(af), category="lender"),
                     LineItem(label="Credit Report", amount=_round_cents(cr), category="lender"),
-                    LineItem(label="Flood Certification", amount=_round_cents(fc), category="lender"),
                 ])
             if fha > ZERO:
                 items.append(LineItem(label="FHA Upfront MIP (1.75%)", amount=_round_cents(fha), category="lender"))
             if va > ZERO:
                 items.append(LineItem(label="VA Funding Fee (2.15%)", amount=_round_cents(va), category="lender"))
+
+            # Inspections
             items.extend([
-                LineItem(label="Lender's Title Policy", amount=_round_cents(ltp), category="title"),
-                LineItem(label="Title Closing Fee (split)", amount=_round_cents(cf), category="title"),
+                LineItem(label="Survey", amount=_round_cents(survey), category="inspection"),
+                LineItem(label="Pest Inspection", amount=_round_cents(pest), category="inspection"),
+                LineItem(label="Home Inspection", amount=_round_cents(home_insp), category="inspection"),
+            ])
+
+            # Government
+            items.extend([
                 LineItem(label="Recording Fee", amount=_round_cents(rf), category="government"),
                 LineItem(label="Tax Certificates", amount=_round_cents(TAX_CERT_FEE), category="government"),
                 LineItem(label="E-Recording Fee", amount=_round_cents(E_RECORDING_FEE_BUYER), category="government"),
-                LineItem(label="Title Search Fee", amount=_round_cents(TITLE_SEARCH_FEE), category="title"),
-                LineItem(label="Document Prep", amount=_round_cents(DOC_PREP_FEE), category="title"),
             ])
-            if pi > ZERO:
-                items.append(LineItem(label="Prepaid Interest (15 days)", amount=_round_cents(pi), category="prepaid"))
-            items.extend([
-                LineItem(label=f"Prepaid Insurance ({mi} mo)", amount=_round_cents(pins), category="prepaid"),
-                LineItem(label=f"Tax Escrow ({mt} mo)", amount=_round_cents(tesc), category="escrow"),
-                LineItem(label="Insurance Escrow (2 mo)", amount=_round_cents(iesc), category="escrow"),
-            ])
+
             if sc > ZERO:
-                items.append(LineItem(label="Seller-Paid Closing Credit", amount=_round_cents(-sc), category="credits"))
+                items.append(LineItem(label="Seller Concession", amount=_round_cents(-sc), category="credits"))
 
             result = BuyerEstimateResult(
                 cash_to_close=_round_cents(ctc), purchase_price=_round_cents(pp),
                 down_payment=_round_cents(dp), loan_amount=_round_cents(la),
-                total_closing_costs=_round_cents(tcc), lender_title_premium=_round_cents(ltp),
+                total_closing_costs=_round_cents(tcc + pi + pins + tesc + survey + pest + home_insp),
+                lender_title_premium=_round_cents(ltp),
+                monthly_payment=_round_cents(total_monthly),
+                monthly_pi=_round_cents(monthly_pi),
+                monthly_taxes=_round_cents(monthly_taxes),
+                monthly_insurance=_round_cents(monthly_ins),
+                monthly_pmi=_round_cents(monthly_pmi) if monthly_pmi > ZERO else None,
                 line_items=items, order_ready=True,
             )
             if data.save:
                 try:
+                    import uuid
                     sheet = SavedSheet(sheet_type="buyer_estimate", property_address=data.property_address,
                         client_name=data.client_name, county_id=data.county_id,
                         input_data=data.model_dump(mode="json"), output_data=result.model_dump(mode="json"),

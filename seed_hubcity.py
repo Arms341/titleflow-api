@@ -140,6 +140,41 @@ def seed():
             db.commit()
             print(f"Seeded {len(counties_data)} West Texas counties.")
 
+        # =====================================================================
+        # TAX DISTRICTS — Lubbock area school district combined rates
+        # =====================================================================
+        from models.tax_district import TaxDistrict
+
+        existing_districts = db.query(TaxDistrict).count()
+        if existing_districts > 0:
+            print(f"Tax districts already exist ({existing_districts}). Skipping.")
+        else:
+            # Find Lubbock county ID
+            lubbock_county = db.query(County).filter(County.county_name == "Lubbock").first()
+            lubbock_county_id = lubbock_county.id if lubbock_county else None
+
+            # Combined rates from WesternAgent ONE (city+county+ISD+hospital+water)
+            tax_districts = [
+                ("Lubbock (Lubbock ISD)", "2.2500", True),
+                ("Lubbock Cooper", "2.5600", False),
+                ("Frenship", "2.7600", False),
+                ("Slaton", "2.7100", False),
+                ("Idalou", "2.2700", False),
+                ("Shallowater", "2.3600", False),
+                ("New Deal", "2.3800", False),
+                ("Roosevelt", "2.1300", False),
+            ]
+            for name, rate, is_default in tax_districts:
+                db.add(TaxDistrict(
+                    county_id=lubbock_county_id,
+                    name=name,
+                    combined_rate_pct=Decimal(rate),
+                    is_default=is_default,
+                    is_active=True,
+                ))
+            db.commit()
+            print(f"Seeded {len(tax_districts)} Lubbock-area tax districts.")
+
         print("Seed complete.")
 
     except Exception as e:

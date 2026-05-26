@@ -1,11 +1,12 @@
 """
-models/user.py  v1.1.0
-Locked template — JARVIS food_truck_pos gig.
-User entity for food truck multi-role auth.
+models/user.py  v1.2.0
+Locked template — JARVIS title_company gig.
+User entity with agent profile fields for title company workflow.
 
+v1.2.0: Added brokerage_name, license_number for agent profile.
+  Agents need these fields to appear on PDFs and for admin approval.
+  Added update_profile() method for self-service profile edits.
 v1.1.0: Added check_password(), get_by_email(), get_by_id(), create() methods.
-  Without check_password(), routes/auth.py login returns 500 every build.
-  Methods match models_user_universal.py contract but keep food truck columns.
 v1.0.0: Initial food truck user model (bare ORM, no methods).
 """
 import logging
@@ -32,6 +33,8 @@ class User(Base):
     role = Column(String(50), nullable=False, server_default="customer")
     is_active = Column(Boolean, nullable=False, server_default="1")
     avatar_url = Column(String(500), nullable=True)
+    brokerage_name = Column(String(255), nullable=True)
+    license_number = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -41,6 +44,22 @@ class User(Base):
     def check_password(self, plain_password: str) -> bool:
         """Verify a password against this user's stored hash."""
         return verify_password(plain_password, self.hashed_password)
+
+    def to_profile_dict(self) -> dict:
+        """Return full profile dict for /auth/me responses."""
+        return {
+            "id": self.id,
+            "email": self.email,
+            "full_name": self.full_name,
+            "phone": self.phone,
+            "role": self.role,
+            "is_active": self.is_active,
+            "avatar_url": self.avatar_url,
+            "brokerage_name": self.brokerage_name,
+            "license_number": self.license_number,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
 
     @classmethod
     def get_by_email(cls, db: Session, email: str) -> Optional["User"]:

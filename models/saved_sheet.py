@@ -1,15 +1,18 @@
 """
-models/saved_sheet.py  v1.0.0
+models/saved_sheet.py  v1.1.0
 Locked template — JARVIS title_company gig.
 Saved calculator output (seller net sheet OR buyer estimate).
 Input + output stored as JSON for replay/share.
+
+v1.1.0: Added client_signature (base64 PNG) and signed_at for e-signature capture.
+v1.0.0: Initial model.
 """
 import logging
 import uuid
 from datetime import datetime
 
 from models.base import Base
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String, Text
 
 
 logger = logging.getLogger(__name__)
@@ -43,6 +46,8 @@ class SavedSheet(Base):
                          default=_new_share_token)
     is_shared = Column(Boolean, nullable=False, server_default="0")
     is_ordered = Column(Boolean, nullable=False, server_default="0")
+    client_signature = Column(Text, nullable=True)
+    signed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

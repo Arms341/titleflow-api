@@ -280,7 +280,7 @@ class PdfGenerator:
                 big_value = output.get("cash_to_close")
 
             totals_rows = [[label, _fmt_money(val)] for label, val in totals]
-            totals_rows.append([f"<b>{big_label}</b>", _fmt_money(big_value)])
+            totals_rows.append([big_label, _fmt_money(big_value)])
             totals_tbl = Table(totals_rows, colWidths=[4.8 * inch, 2.0 * inch])
             totals_tbl.setStyle(TableStyle([
                 ("ALIGN", (1, 0), (1, -1), "RIGHT"),

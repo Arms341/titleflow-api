@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 
 from models.base import Base
-from sqlalchemy import Column, DateTime, Decimal, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, Numeric, String, Boolean, ForeignKey
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class TaxDistrict(Base):
         index=True,
     )
     name = Column(String(255), nullable=False)
-    combined_rate_pct = Column(Decimal(6, 4), nullable=False)
+    combined_rate_pct = Column(Numeric(6, 4), nullable=False)
     is_default = Column(Boolean, nullable=False, server_default="0")
     is_active = Column(Boolean, nullable=False, server_default="1")
     created_at = Column(DateTime, default=datetime.utcnow)

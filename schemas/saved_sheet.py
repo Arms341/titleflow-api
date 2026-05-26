@@ -3,6 +3,7 @@ schemas/saved_sheet.py  v1.0.0
 Locked template — JARVIS title_company gig.
 """
 import logging
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict
@@ -54,6 +55,9 @@ class SavedSheetResponse(SavedSheetBase):
     id: int
     agent_id: Optional[int] = None
     share_token: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    signed_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 

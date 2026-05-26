@@ -3,7 +3,7 @@ schemas/order.py  v1.0.0
 Locked template — JARVIS title_company gig.
 """
 import logging
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
@@ -78,5 +78,7 @@ class OrderResponse(OrderBase):
 
     id: int
     agent_id: Optional[int] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

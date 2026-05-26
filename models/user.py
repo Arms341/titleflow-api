@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Optional
 
 from models.base import Base, get_password_hash, verify_password
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, select
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, select
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class User(Base):
     phone = Column(String(50), nullable=True)
     role = Column(String(50), nullable=False, server_default="customer")
     is_active = Column(Boolean, nullable=False, server_default="1")
-    avatar_url = Column(String(500), nullable=True)
+    avatar_url = Column(Text, nullable=True)
     brokerage_name = Column(String(255), nullable=True)
     license_number = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

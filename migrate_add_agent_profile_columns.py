@@ -49,6 +49,16 @@ def run_migration():
             print(f"[MIGRATE] Users: added {len(migrations)} column(s)")
         else:
             print("[MIGRATE] Users: all columns exist")
+
+        # -- Widen avatar_url from VARCHAR to TEXT (base64 data URLs are large) --
+        if "users" in inspector.get_table_names():
+            try:
+                with engine.begin() as conn:
+                    conn.execute(text("ALTER TABLE users ALTER COLUMN avatar_url TYPE TEXT"))
+                print("[MIGRATE] Users: avatar_url widened to TEXT")
+            except Exception as e:
+                if "already" not in str(e).lower():
+                    print(f"[MIGRATE] avatar_url type change skipped: {e}")
     else:
         print("[MIGRATE] Users table not yet created — skipping")
 

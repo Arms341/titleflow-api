@@ -1,18 +1,14 @@
 """
-services/pdf_generator.py  v1.0.0
-Locked template — JARVIS title_company gig.
-Branded PDF generation for saved sheets. Uses reportlab.
-
-The PDF layout matches the HubCityTitleAgent spec §11:
-  HEADER: Company logo + name + contact, right side agent info
-  PROPERTY: Address, client name, dates
-  BODY: Itemized line items grouped by category
-  TOTALS BOX: Sale price / net proceeds (seller) or purchase / cash to close (buyer)
-  REISSUE CALLOUT: If reissue discount applied
-  FOOTER: Disclaimer + generated-by line
+services/pdf_generator.py  v2.0.0
+Dual-branded PDF — title company logo + agent headshot.
+v2.0.0: Added company logo image, agent headshot image, dual-brand header.
+        Fetch remote images via urllib, render with reportlab Image.
+v1.0.0: Initial text-only branded PDF.
 """
 import io
 import logging
+import tempfile
+import urllib.request
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
@@ -21,6 +17,7 @@ from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    Image,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -32,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 def _fmt_money(value: Any) -> str:
-    """Format any numeric-ish value as $X,XXX.XX."""
     if value is None:
         return "$0.00"
     try:
@@ -45,7 +41,6 @@ def _fmt_money(value: Any) -> str:
 
 
 def _hex_to_rl_color(hex_str: Optional[str], fallback: str = "#1e3a8a") -> colors.Color:
-    """Convert '#RRGGBB' hex to reportlab Color. Falls back on invalid input."""
     try:
         h = (hex_str or fallback).lstrip("#")
         if len(h) != 6:
@@ -58,19 +53,36 @@ def _hex_to_rl_color(hex_str: Optional[str], fallback: str = "#1e3a8a") -> color
         return colors.HexColor(fallback)
 
 
+def _fetch_image_to_temp(url: str, max_size: int = 2 * 1024 * 1024) -> Optional[str]:
+    """Download image URL to a temp file. Returns path or None on failure."""
+    if not url or not url.startswith("http"):
+        return None
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "TitleFlow/2.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = resp.read(max_size)
+        if len(data) < 100:
+            return None
+        suffix = ".jpg"
+        if data[:4] == b"\x89PNG":
+            suffix = ".png"
+        elif data[:4] == b"GIF8":
+            suffix = ".gif"
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+        tmp.write(data)
+        tmp.close()
+        return tmp.name
+    except Exception as e:
+        logger.debug("Could not fetch image %s: %s", url[:80], e)
+        return None
+
+
 class PdfGeneratorError(Exception):
-    """PDF generation failed."""
     pass
 
 
 class PdfGenerator:
-    """
-    Produces branded net-sheet / buyer-estimate PDFs.
-
-    Usage:
-        buf = PdfGenerator().render_sheet(sheet_dict, company_dict, agent_dict)
-        # buf is a BytesIO, ready to return with Content-Type: application/pdf
-    """
+    """Produces dual-branded net-sheet / buyer-estimate PDFs."""
 
     def render_sheet(
         self,
@@ -78,7 +90,6 @@ class PdfGenerator:
         company: Dict[str, Any],
         agent: Optional[Dict[str, Any]] = None,
     ) -> io.BytesIO:
-        """Build a branded PDF for one saved sheet. Returns seek(0)'d BytesIO."""
         try:
             buffer = io.BytesIO()
             doc = SimpleDocTemplate(
@@ -86,8 +97,8 @@ class PdfGenerator:
                 pagesize=LETTER,
                 leftMargin=0.6 * inch,
                 rightMargin=0.6 * inch,
-                topMargin=0.6 * inch,
-                bottomMargin=0.6 * inch,
+                topMargin=0.5 * inch,
+                bottomMargin=0.5 * inch,
             )
             brand_primary = _hex_to_rl_color(company.get("primary_color"))
             brand_secondary = _hex_to_rl_color(company.get("secondary_color"), fallback="#f59e0b")
@@ -95,75 +106,125 @@ class PdfGenerator:
             story: List[Any] = []
             styles = getSampleStyleSheet()
             heading = ParagraphStyle(
-                "heading",
-                parent=styles["Heading1"],
-                textColor=brand_primary,
-                spaceAfter=6,
+                "heading", parent=styles["Heading1"],
+                textColor=brand_primary, spaceAfter=6,
             )
             subheading = ParagraphStyle(
-                "subheading",
-                parent=styles["Heading3"],
-                textColor=brand_primary,
-                spaceAfter=4,
+                "subheading", parent=styles["Heading3"],
+                textColor=brand_primary, spaceAfter=4,
             )
             normal = styles["Normal"]
             small = ParagraphStyle("small", parent=normal, fontSize=8, textColor=colors.grey)
             big_total = ParagraphStyle(
-                "big_total",
-                parent=styles["Heading1"],
-                alignment=2,
-                textColor=brand_primary,
-                fontSize=20,
+                "big_total", parent=styles["Heading1"],
+                alignment=2, textColor=brand_primary, fontSize=20,
             )
 
-            # HEADER
+            # ── HEADER — Company (left) + Agent (right) ──
+            # Company side: logo + name + contact
             company_name = company.get("company_name") or "Title Company"
+            company_elements: List[Any] = []
+
+            logo_path = _fetch_image_to_temp(company.get("logo_url"))
+            if logo_path:
+                try:
+                    company_elements.append(Image(logo_path, width=1.2 * inch, height=0.6 * inch))
+                except Exception:
+                    pass
+
             left_lines = [f"<b>{company_name}</b>"]
-            for field in ("phone", "email", "website"):
+            for field in ("phone", "email", "website", "address"):
                 val = company.get(field)
                 if val:
                     left_lines.append(str(val))
-            left_block = Paragraph("<br/>".join(left_lines), normal)
+            company_elements.append(Paragraph("<br/>".join(left_lines), normal))
+            left_block = company_elements
 
-            right_lines: List[str] = []
+            # Agent side: headshot + name + brokerage + phone
+            agent_elements: List[Any] = []
             if agent:
+                headshot_path = _fetch_image_to_temp(agent.get("avatar_url"))
+                if headshot_path:
+                    try:
+                        agent_elements.append(Image(headshot_path, width=0.9 * inch, height=0.9 * inch))
+                    except Exception:
+                        pass
+
+                right_lines: List[str] = []
                 name = agent.get("full_name") or agent.get("name")
                 if name:
                     right_lines.append(f"<b>{name}</b>")
-                for field in ("brokerage_name", "license_number", "phone"):
+                brokerage = agent.get("brokerage_name")
+                if brokerage:
+                    right_lines.append(f"<i>{brokerage}</i>")
+                for field in ("license_number", "phone", "email"):
                     val = agent.get(field)
                     if val:
                         right_lines.append(str(val))
-            right_block = Paragraph("<br/>".join(right_lines) or "&nbsp;", normal)
+                if right_lines:
+                    agent_elements.append(
+                        Paragraph("<br/>".join(right_lines),
+                                  ParagraphStyle("agent_info", parent=normal, alignment=2))
+                    )
+
+            # Build header as a table: left = company, right = agent
+            # Stack elements vertically in each cell using nested Table
+            def _stack(elements: List[Any]) -> Any:
+                if not elements:
+                    return Paragraph("&nbsp;", normal)
+                if len(elements) == 1:
+                    return elements[0]
+                rows = [[e] for e in elements]
+                t = Table(rows, colWidths=[3.4 * inch])
+                t.setStyle(TableStyle([
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                    ("TOPPADDING", (0, 0), (-1, -1), 2),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+                ]))
+                return t
 
             header_tbl = Table(
-                [[left_block, right_block]],
-                colWidths=[3.6 * inch, 3.6 * inch],
+                [[_stack(left_block), _stack(agent_elements)]],
+                colWidths=[3.8 * inch, 3.4 * inch],
             )
             header_tbl.setStyle(TableStyle([
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (1, 0), (1, 0), "RIGHT"),
                 ("LINEBELOW", (0, 0), (-1, 0), 2, brand_primary),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
             ]))
             story.append(header_tbl)
             story.append(Spacer(1, 8))
 
-            # SHEET TITLE
-            sheet_type = sheet.get("sheet_type", "seller_net_sheet")
-            title_text = "Seller Net Sheet" if sheet_type == "seller_net_sheet" else "Buyer Closing Estimate"
+            # ── SHEET TITLE ──
+            sheet_type = sheet.get("sheet_type", "seller")
+            if "seller" in sheet_type:
+                title_text = "Seller Net Sheet"
+            elif "buyer" in sheet_type:
+                title_text = "Buyer Closing Estimate"
+            else:
+                title_text = "Net Sheet"
             story.append(Paragraph(title_text, heading))
 
-            # PROPERTY BLOCK
+            # ── PROPERTY BLOCK ──
             prop_lines = []
             if sheet.get("property_address"):
                 prop_lines.append(f"<b>Property:</b> {sheet['property_address']}")
             if sheet.get("client_name"):
                 prop_lines.append(f"<b>Client:</b> {sheet['client_name']}")
+            inp = sheet.get("input_data") or {}
+            if inp.get("closing_date"):
+                prop_lines.append(f"<b>Closing Date:</b> {inp['closing_date']}")
+            county_name = inp.get("county_name")
+            if county_name:
+                prop_lines.append(f"<b>County:</b> {county_name}")
             if prop_lines:
                 story.append(Paragraph("<br/>".join(prop_lines), normal))
                 story.append(Spacer(1, 8))
 
-            # LINE ITEMS
+            # ── LINE ITEMS ──
             output = sheet.get("output_data") or {}
             line_items = output.get("line_items") or []
             story.append(Paragraph("Itemized Costs", subheading))
@@ -186,7 +247,7 @@ class PdfGenerator:
             story.append(items_tbl)
             story.append(Spacer(1, 10))
 
-            # REISSUE CALLOUT
+            # ── REISSUE CALLOUT ──
             reissue = output.get("reissue_savings")
             if reissue and Decimal(str(reissue)) > 0:
                 story.append(Paragraph(
@@ -200,8 +261,8 @@ class PdfGenerator:
                 ))
                 story.append(Spacer(1, 8))
 
-            # TOTALS
-            if sheet_type == "seller_net_sheet":
+            # ── TOTALS ──
+            if "seller" in sheet_type:
                 totals = [
                     ("Sale Price", output.get("sale_price")),
                     ("Total Closing Costs", output.get("total_closing_costs")),
@@ -230,18 +291,24 @@ class PdfGenerator:
                 ("TOPPADDING", (0, -1), (-1, -1), 6),
             ]))
             story.append(totals_tbl)
-            story.append(Spacer(1, 18))
+            story.append(Spacer(1, 12))
 
-            # BIG NET PROCEEDS display
+            # ── BIG NET PROCEEDS ──
             story.append(Paragraph(_fmt_money(big_value), big_total))
-            story.append(Spacer(1, 18))
+            story.append(Spacer(1, 16))
 
-            # FOOTER DISCLAIMER
+            # ── FOOTER ──
             disclaimer = company.get("disclaimer_text") \
                 or "This is an estimate. Actual figures may vary at closing."
             story.append(Paragraph(disclaimer, small))
             story.append(Spacer(1, 4))
-            story.append(Paragraph(f"Generated by {company_name}", small))
+            agent_credit = ""
+            if agent and agent.get("full_name"):
+                agent_credit = f" | Prepared by {agent['full_name']}"
+            story.append(Paragraph(
+                f"Generated by {company_name}{agent_credit}",
+                small,
+            ))
 
             doc.build(story)
             buffer.seek(0)
@@ -252,5 +319,4 @@ class PdfGenerator:
 
 
 def get_pdf_generator() -> PdfGenerator:
-    """FastAPI dependency — stateless."""
     return PdfGenerator()

@@ -21,6 +21,18 @@ def run_migration():
     """Add new columns to users and saved_sheets tables if missing."""
     inspector = inspect(engine)
 
+    # -- Ensure all model tables exist (covers new models like TaxDistrict) --
+    try:
+        from models.base import Base
+        import models.user
+        import models.saved_sheet
+        import models.tax_district
+        Base.metadata.create_all(bind=engine)
+        print("[MIGRATE] create_all completed")
+        inspector = inspect(engine)  # refresh after create_all
+    except Exception as e:
+        print(f"[MIGRATE] create_all warning: {e}")
+
     # -- Users table --
     if "users" in inspector.get_table_names():
         existing = {col["name"] for col in inspector.get_columns("users")}

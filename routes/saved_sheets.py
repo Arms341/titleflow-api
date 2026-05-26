@@ -156,3 +156,42 @@ def share_saved_sheet(
 
 
 saved_sheets_router = router
+
+
+# -- In-person signature (agent authenticated) --
+from pydantic import BaseModel as _BM
+from datetime import datetime as _dt
+
+
+class InPersonSignature(_BM):
+    signature: str  # base64 PNG
+    signer_name: str = ""
+
+
+@router.post("/{sheet_id}/sign")
+def sign_in_person(
+    sheet_id: int,
+    payload: InPersonSignature,
+    db: Session = Depends(get_db),
+    service: SavedSheetService = Depends(_get_saved_sheet_service),
+):
+    """POST /saved_sheets/{id}/sign — agent captures client signature in person."""
+    try:
+        sheet = service.get_by_id(sheet_id)
+        if not sheet:
+            raise HTTPException(status_code=404, detail="Sheet not found")
+        if sheet.client_signature:
+            raise HTTPException(status_code=400, detail="Sheet already signed")
+        sheet.client_signature = payload.signature
+        sheet.signed_at = _dt.utcnow()
+        if payload.signer_name and not sheet.client_name:
+            sheet.client_name = payload.signer_name
+        db.commit()
+        db.refresh(sheet)
+        logger.info(f"[SHEETS] Sheet {sheet_id} signed in person")
+        return {"status": "signed", "signed_at": sheet.signed_at.isoformat()}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Error signing sheet %d: %s", sheet_id, str(e))
+        raise HTTPException(status_code=500, detail="Signature failed")

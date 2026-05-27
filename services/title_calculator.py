@@ -1,8 +1,11 @@
 """
-services/title_calculator.py  v2.1.0
+services/title_calculator.py  v2.2.0
 Locked template — JARVIS title_company gig.
 CORE BUSINESS LOGIC — 11 calculators, all Decimal math.
 
+v2.2.0: TDI 2025 Basic Premium Rates (Commissioner's Order 2025-9125, effective July 1, 2025).
+  Hardcoded 151-row lookup table + 7-tier excess formula replaces database bracket lookup.
+  10% reduction from prior rates.
 v2.1.0: Seller net sheet fixes per Lee:
   - No reissue rate discount on sale
   - No title search fee on sale
@@ -61,6 +64,69 @@ ORIGINATION_RATE = Decimal("0.01")
 DEFAULT_PER_DIEM_INTEREST_RATE = Decimal("0.065")
 CENT = Decimal("0.01")
 ZERO = Decimal("0")
+
+# ── TDI 2025 Basic Premium Rates (effective July 1, 2025) ──
+# Source: Commissioner's Order No. 2025-9125, Exhibit A
+# 10% reduction from prior rates. Same table for Owner's + Lender's policies.
+_TDI_2025_TABLE = (
+    (25000,295),(25500,298),(26000,302),(26500,304),(27000,306),(27500,309),
+    (28000,312),(28500,315),(29000,320),(29500,322),(30000,325),(30500,328),
+    (31000,331),(31500,334),(32000,337),(32500,340),(33000,343),(33500,347),
+    (34000,349),(34500,353),(35000,356),(35500,358),(36000,361),(36500,365),
+    (37000,367),(37500,371),(38000,374),(38500,377),(39000,379),(39500,383),
+    (40000,385),(40500,390),(41000,392),(41500,395),(42000,398),(42500,401),
+    (43000,403),(43500,407),(44000,410),(44500,413),(45000,417),(45500,419),
+    (46000,422),(46500,426),(47000,428),(47500,430),(48000,435),(48500,438),
+    (49000,441),(49500,444),(50000,446),(50500,449),(51000,451),(51500,455),
+    (52000,459),(52500,463),(53000,464),(53500,468),(54000,471),(54500,473),
+    (55000,476),(55500,479),(56000,483),(56500,486),(57000,489),(57500,492),
+    (58000,496),(58500,498),(59000,500),(59500,504),(60000,508),(60500,511),
+    (61000,514),(61500,516),(62000,519),(62500,523),(63000,525),(63500,528),
+    (64000,532),(64500,535),(65000,537),(65500,540),(66000,544),(66500,548),
+    (67000,551),(67500,552),(68000,555),(68500,559),(69000,562),(69500,564),
+    (70000,568),(70500,572),(71000,575),(71500,577),(72000,580),(72500,583),
+    (73000,586),(73500,589),(74000,592),(74500,596),(75000,599),(75500,601),
+    (76000,604),(76500,607),(77000,610),(77500,613),(78000,617),(78500,620),
+    (79000,624),(79500,625),(80000,628),(80500,632),(81000,635),(81500,637),
+    (82000,640),(82500,644),(83000,648),(83500,650),(84000,653),(84500,656),
+    (85000,659),(85500,662),(86000,664),(86500,669),(87000,672),(87500,674),
+    (88000,677),(88500,680),(89000,684),(89500,686),(90000,689),(90500,692),
+    (91000,696),(91500,699),(92000,701),(92500,705),(93000,707),(93500,711),
+    (94000,712),(94500,716),(95000,721),(95500,724),(96000,725),(96500,728),
+    (97000,732),(97500,735),(98000,738),(98500,742),(99000,744),(99500,747),
+    (100000,749),
+)
+# Excess tiers: (max_face, subtract, multiply_by, add)
+_TDI_2025_EXCESS = (
+    (1000000, 100000, Decimal("0.00474"), Decimal("749")),
+    (5000000, 1000000, Decimal("0.00390"), Decimal("5018")),
+    (15000000, 5000000, Decimal("0.00321"), Decimal("20606")),
+    (25000000, 15000000, Decimal("0.00229"), Decimal("52736")),
+    (50000000, 25000000, Decimal("0.00137"), Decimal("75596")),
+    (100000000, 50000000, Decimal("0.00124"), Decimal("109796")),
+    (None, 100000000, Decimal("0.00112"), Decimal("171896")),
+)
+
+
+def _tdi_2025_premium(face_value: Decimal) -> Decimal:
+    """Calculate title insurance basic premium per TDI 2025 schedule."""
+    fv = int(_to_decimal(face_value))
+    if fv <= 0:
+        return ZERO
+    if fv < 25000:
+        return Decimal("295")  # minimum premium
+    if fv <= 100000:
+        # Lookup: find smallest bracket >= face_value
+        for max_val, premium in _TDI_2025_TABLE:
+            if fv <= max_val:
+                return Decimal(str(premium))
+        return Decimal("749")  # $100,000 cap
+    # Excess formula for > $100,000
+    for max_face, subtract, multiply, add in _TDI_2025_EXCESS:
+        if max_face is None or fv <= max_face:
+            excess = Decimal(str(fv - subtract))
+            return (excess * multiply).quantize(Decimal("1")) + add
+    return ZERO
 
 
 def _to_decimal(v) -> Decimal:
@@ -132,7 +198,7 @@ class TitleCalculatorService:
 
             owner_title_base = ZERO
             if county.owner_rate_table_id is not None:
-                owner_title_base = rate.get_title_premium(sale_price, county.owner_rate_table_id, db=db)
+                owner_title_base = _tdi_2025_premium(sale_price)
             owner_title_premium = owner_title_base
 
             # Doc prep: $150 for deed + $50 for release if there's a payoff
@@ -249,7 +315,7 @@ class TitleCalculatorService:
             # Title fees
             ltp = ZERO
             if not is_cash and county.lender_rate_table_id is not None and la > ZERO:
-                ltp = rate.get_title_premium(la, county.lender_rate_table_id, db=db)
+                ltp = _tdi_2025_premium(la)
             cf = _to_decimal(county.closing_fee_flat) / Decimal("2")
             rf = _to_decimal(county.recording_fee_flat)
             escrow_fee = _to_decimal(data.escrow_fee)

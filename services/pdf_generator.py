@@ -57,8 +57,24 @@ def _hex_to_rl_color(hex_str: Optional[str], fallback: str = "#1e3a8a") -> color
 
 
 def _fetch_image_to_temp(url: str, max_size: int = 2 * 1024 * 1024) -> Optional[str]:
-    """Download image URL to a temp file. Returns path or None on failure."""
-    if not url or not url.startswith("http"):
+    """Download image URL or decode base64 data URL to a temp file. Returns path or None."""
+    if not url:
+        return None
+    # Handle base64 data URLs (from profile photo upload)
+    if url.startswith("data:image"):
+        try:
+            header, b64data = url.split(",", 1)
+            img_bytes = base64.b64decode(b64data)
+            suffix = ".jpg"
+            if "png" in header:
+                suffix = ".png"
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+            tmp.write(img_bytes)
+            tmp.close()
+            return tmp.name
+        except Exception:
+            return None
+    if not url.startswith("http"):
         return None
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "TitleFlow/2.0"})

@@ -159,13 +159,14 @@ class PdfGenerator:
             company_elements.append(Paragraph("<br/>".join(left_lines), normal))
             left_block = company_elements
 
-            # Agent side: headshot + name + brokerage + phone
+            # Agent side: headshot next to name/brokerage/phone (right-aligned)
             agent_elements: List[Any] = []
             if agent:
                 headshot_path = _fetch_image_to_temp(agent.get("avatar_url"))
+                headshot_img = None
                 if headshot_path:
                     try:
-                        agent_elements.append(Image(headshot_path, width=0.9 * inch, height=0.9 * inch))
+                        headshot_img = Image(headshot_path, width=0.8 * inch, height=0.8 * inch)
                     except Exception:
                         pass
 
@@ -180,11 +181,28 @@ class PdfGenerator:
                     val = agent.get(field)
                     if val:
                         right_lines.append(str(val))
-                if right_lines:
-                    agent_elements.append(
-                        Paragraph("<br/>".join(right_lines),
-                                  ParagraphStyle("agent_info", parent=normal, alignment=2))
+                agent_text = Paragraph(
+                    "<br/>".join(right_lines),
+                    ParagraphStyle("agent_info", parent=normal, alignment=2, fontSize=9)
+                ) if right_lines else None
+
+                if headshot_img and agent_text:
+                    # Side by side: headshot | text
+                    agent_row = Table(
+                        [[headshot_img, agent_text]],
+                        colWidths=[1.0 * inch, 2.2 * inch],
                     )
+                    agent_row.setStyle(TableStyle([
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                    ]))
+                    agent_elements.append(agent_row)
+                elif agent_text:
+                    agent_elements.append(agent_text)
+                elif headshot_img:
+                    agent_elements.append(headshot_img)
 
             # Build header as a table: left = company, right = agent
             # Stack elements vertically in each cell using nested Table
@@ -337,7 +355,7 @@ class PdfGenerator:
                     sig_img = Image(sig_tmp.name, width=2.0 * inch, height=0.6 * inch)
                     sig_line_data = [
                         [sig_img, ''],
-                        ['X _______________________________', ''],
+                        ['X _______________________________________', ''],
                     ]
                     sig_tbl = Table(sig_line_data, colWidths=[3.5 * inch, 3.5 * inch])
                     sig_tbl.setStyle(TableStyle([
@@ -360,7 +378,7 @@ class PdfGenerator:
             else:
                 # Unsigned: show empty signature line
                 story.append(Spacer(1, 20))
-                story.append(Paragraph("X _______________________________", normal))
+                story.append(Paragraph("X _______________________________________", normal))
                 story.append(Paragraph("Client Signature", small))
 
             # ── FOOTER ──

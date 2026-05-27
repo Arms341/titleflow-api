@@ -1,10 +1,11 @@
-"""routes/auth.py — canonical locked template v1.6.0
+"""routes/auth.py — canonical locked template v1.7.0
 
-Mounts at prefix="/auth" via main.py include_router.
-Endpoints: POST /auth/login, POST /auth/register, POST /auth/token,
-           GET /auth/me, PUT /auth/profile, GET /auth/agents, PUT /auth/agents/{id}/approve
-
-v1.6.0: Email case-insensitive — all login/token/register normalize to .lower().strip().
+v1.7.0: Agent self-registration flow:
+  - Register sets is_active=False (pending approval)
+  - /me allows inactive users to see their status
+  - Register sends email notification to admin
+  - Approve sends welcome email to agent
+v1.6.0: Email case-insensitive.
 v1.5.0: Added PUT /profile for agent self-service profile edits.
   Added full profile response on /me (to_profile_dict).
   Added GET /agents (admin list all agents) + PUT /agents/{id}/approve.
@@ -14,15 +15,16 @@ v1.3.0: All handlers sync def (not async def).
 v1.2.0: /register uses User.create() classmethod.
 v1.1.0: /register accepts JSON body (UserCreate schema).
 """
+import asyncio
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from auth.jwt_handler import create_access_token
-from auth.dependencies import get_current_active_user, get_admin_user
+from auth.dependencies import get_current_active_user, get_current_user, get_admin_user
 from auth.schemas import UserCreate, ProfileUpdate
 from database import get_db
 from models.user import User
@@ -84,8 +86,8 @@ def token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    """Register a new user account."""
+def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """Register a new user account. Inactive until admin approves."""
     try:
         normalized_email = user_data.email.lower().strip()
         existing = db.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
@@ -101,11 +103,31 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
             phone=user_data.phone,
             brokerage_name=user_data.brokerage_name,
             role="agent",
+            is_active=False,
         )
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        return {"id": new_user.id, "email": new_user.email}
+
+        # Notify admin (fire-and-forget)
+        def _send_admin_email():
+            try:
+                from services.email_service import get_email_service
+                from services.company_service import CompanyService
+                email_svc = get_email_service()
+                co_svc = CompanyService()
+                co_svc._db = db
+                company_row = co_svc.get_company()
+                company_dict = {"email": company_row.email, "order_submission_email": getattr(company_row, "order_submission_email", None), "company_name": company_row.company_name}
+                agent_dict = {"full_name": new_user.full_name, "email": new_user.email, "brokerage_name": new_user.brokerage_name, "phone": new_user.phone, "license_number": getattr(new_user, "license_number", "")}
+                loop = asyncio.new_event_loop()
+                loop.run_until_complete(email_svc.notify_new_agent(agent_dict, company_dict))
+                loop.close()
+            except Exception as e:
+                logger.warning("Admin notification email failed: %s", e)
+        background_tasks.add_task(_send_admin_email)
+
+        return {"id": new_user.id, "email": new_user.email, "is_active": False, "message": "Registration successful. Awaiting admin approval."}
     except HTTPException:
         raise
     except Exception as exc:
@@ -117,8 +139,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/me")
-def get_me(current_user=Depends(get_current_active_user)):
-    """Return the currently authenticated user full profile."""
+def get_me(current_user=Depends(get_current_user)):
+    """Return the currently authenticated user full profile (active or pending)."""
     return current_user.to_profile_dict()
 
 
@@ -171,6 +193,7 @@ def list_agents(
 @router.put("/agents/{agent_id}/approve")
 def approve_agent(
     agent_id: int,
+    background_tasks: BackgroundTasks,
     current_user=Depends(get_admin_user),
     db: Session = Depends(get_db),
 ):
@@ -184,6 +207,25 @@ def approve_agent(
         db.commit()
         db.refresh(agent)
         logger.info(f"[AUTH] Agent {agent_id} approved by admin {current_user.id}")
+
+        # Send welcome email to agent (fire-and-forget)
+        def _send_welcome_email():
+            try:
+                from services.email_service import get_email_service
+                from services.company_service import CompanyService
+                email_svc = get_email_service()
+                co_svc = CompanyService()
+                co_svc._db = db
+                company_row = co_svc.get_company()
+                company_dict = {"company_name": company_row.company_name, "phone": company_row.phone, "email": company_row.email}
+                agent_dict = {"email": agent.email, "full_name": agent.full_name}
+                loop = asyncio.new_event_loop()
+                loop.run_until_complete(email_svc.notify_agent_approved(agent_dict, company_dict))
+                loop.close()
+            except Exception as e:
+                logger.warning("Agent welcome email failed: %s", e)
+        background_tasks.add_task(_send_welcome_email)
+
         return agent.to_profile_dict()
     except HTTPException:
         raise

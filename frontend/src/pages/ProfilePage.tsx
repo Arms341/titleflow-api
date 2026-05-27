@@ -132,9 +132,24 @@ export default function ProfilePage() {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (file.size > 2 * 1024 * 1024) { alert('Photo must be under 2MB'); return; }
+                    if (file.size > 5 * 1024 * 1024) { alert('Photo must be under 5MB'); return; }
+                    // Resize to 300x300 max for PDF headshot
+                    const img = document.createElement('img');
+                    const canvas = document.createElement('canvas');
                     const reader = new FileReader();
-                    reader.onload = () => { update('avatar_url', reader.result as string); };
+                    reader.onload = () => {
+                      img.onload = () => {
+                        const max = 300;
+                        let w = img.width, h = img.height;
+                        if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+                        else { if (h > max) { w = w * max / h; h = max; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+                        const resized = canvas.toDataURL('image/jpeg', 0.85);
+                        update('avatar_url', resized);
+                      };
+                      img.src = reader.result as string;
+                    };
                     reader.readAsDataURL(file);
                   }} />
                 <label htmlFor="avatar-upload"

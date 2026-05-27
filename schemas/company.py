@@ -25,6 +25,7 @@ class CompanyBase(BaseModel):
     tagline: Optional[str] = None
     disclaimer_text: Optional[str] = None
     order_submission_email: Optional[str] = None
+    fee_settings: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

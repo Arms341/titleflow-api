@@ -1,8 +1,10 @@
 """
-services/title_calculator.py  v2.4.0
+services/title_calculator.py  v2.5.0
 Locked template — JARVIS title_company gig.
 CORE BUSINESS LOGIC — 11 calculators, all Decimal math.
 
+v2.5.0: Custom fees — admin-defined flat/percent fees per company.
+  Stored in fee_settings.custom_fees array. Applied to seller, buyer, or both.
 v2.4.0: Toggleable national features behind seller_toggles in fee_settings.
   reissue_discount: looks up reissue_discounts table, applies % off owner premium.
   title_search_fee: adds configurable title search fee to seller costs.
@@ -277,21 +279,48 @@ class TitleCalculatorService:
             # Title search fee (if toggled on)
             title_search = _to_decimal(fees.get("title_search_fee_amount", 175.00)) if seller_toggles.get("title_search_fee", False) else ZERO
 
+            # Apply seller_toggles — toggled OFF = fee not charged, not shown
+            recording_fee = _to_decimal(county.recording_fee_flat) if seller_toggles.get("recording_fee", True) else ZERO
+            transfer_tax = (sale_price * _to_decimal(county.transfer_tax_rate_pct) / Decimal("100")) if seller_toggles.get("transfer_tax", True) else ZERO
+            fee_tax_cert = fee_tax_cert if seller_toggles.get("tax_cert", True) else ZERO
+            fee_e_recording = fee_e_recording if seller_toggles.get("e_recording", True) else ZERO
+            fee_guaranty = fee_guaranty if seller_toggles.get("guaranty_fee", True) else ZERO
+
             # Doc prep: deed + release if there's a payoff (fees from settings)
             seller_doc_prep = fee_deed_prep
             if loan_balance > ZERO:
                 seller_doc_prep = seller_doc_prep + fee_release_prep
 
             closing_fee = _to_decimal(county.closing_fee_flat) / Decimal("2")
-            recording_fee = _to_decimal(county.recording_fee_flat)
-            transfer_tax = sale_price * _to_decimal(county.transfer_tax_rate_pct) / Decimal("100")
-            survey_fee = _to_decimal(county.survey_fee_flat) if data.include_survey else ZERO
-            home_warranty = _to_decimal(data.home_warranty_amount) if data.include_home_warranty else ZERO
+            survey_fee = (_to_decimal(county.survey_fee_flat) if data.include_survey else ZERO) if seller_toggles.get("survey", True) else ZERO
+            home_warranty = (_to_decimal(data.home_warranty_amount) if data.include_home_warranty else ZERO) if seller_toggles.get("home_warranty", True) else ZERO
             per_diem_rate = _to_decimal(data.loan_payoff_per_diem_rate) if data.loan_payoff_per_diem_rate is not None else fee_per_diem_default
-            per_diem_interest = (loan_balance * per_diem_rate / Decimal("365")) * Decimal("30")
+            per_diem_interest = ((loan_balance * per_diem_rate / Decimal("365")) * Decimal("30")) if seller_toggles.get("per_diem_interest", True) else ZERO
             hoa_payoff = _to_decimal(data.hoa_payoff)
             seller_concessions = _to_decimal(data.seller_concessions)
             miscellaneous = _to_decimal(data.miscellaneous_fees)
+
+            # ── Custom fees (admin-defined per company) ──
+            custom_fees_list = fees.get("custom_fees", [])
+            custom_seller_total = ZERO
+            custom_seller_items: List[LineItem] = []
+            for cf in custom_fees_list:
+                if not isinstance(cf, dict):
+                    continue
+                side = cf.get("side", "seller")
+                if side not in ("seller", "both"):
+                    continue
+                label = cf.get("label", "Custom Fee")
+                fee_type = cf.get("type", "flat")
+                amount = _to_decimal(cf.get("amount", 0))
+                if fee_type == "percent":
+                    computed = sale_price * amount / Decimal("100")
+                else:
+                    computed = amount
+                if computed > ZERO:
+                    pct_note = f" ({amount}%)" if fee_type == "percent" else ""
+                    custom_seller_total += computed
+                    custom_seller_items.append(LineItem(label=f"{label}{pct_note}", amount=_round_cents(computed), category="custom"))
 
             # Tax proration
             annual_taxes = _to_decimal(data.annual_property_taxes)
@@ -311,6 +340,7 @@ class TitleCalculatorService:
                 + seller_doc_prep + fee_tax_cert + fee_e_recording
                 + fee_guaranty + tax_proration + hoa_payoff
                 + seller_concessions + miscellaneous + title_search
+                + custom_seller_total
             )
             net_proceeds = sale_price - loan_balance - total_seller_costs
 
@@ -326,12 +356,17 @@ class TitleCalculatorService:
             line_items.extend([
                 LineItem(label="Title Closing Fee (split)", amount=_round_cents(closing_fee), category="title"),
                 LineItem(label="Deed Prep" + (" + Release" if loan_balance > ZERO else ""), amount=_round_cents(seller_doc_prep), category="title"),
-                LineItem(label="Recording Fee", amount=_round_cents(recording_fee), category="government"),
-                LineItem(label="Transfer Tax", amount=_round_cents(transfer_tax), category="government"),
-                LineItem(label="Tax Certificates", amount=_round_cents(fee_tax_cert), category="government"),
-                LineItem(label="E-Recording Fee", amount=_round_cents(fee_e_recording), category="government"),
-                LineItem(label="TX Policy Guaranty Fee", amount=_round_cents(fee_guaranty), category="title"),
             ])
+            if recording_fee > ZERO:
+                line_items.append(LineItem(label="Recording Fee", amount=_round_cents(recording_fee), category="government"))
+            if transfer_tax > ZERO:
+                line_items.append(LineItem(label="Transfer Tax", amount=_round_cents(transfer_tax), category="government"))
+            if fee_tax_cert > ZERO:
+                line_items.append(LineItem(label="Tax Certificates", amount=_round_cents(fee_tax_cert), category="government"))
+            if fee_e_recording > ZERO:
+                line_items.append(LineItem(label="E-Recording Fee", amount=_round_cents(fee_e_recording), category="government"))
+            if fee_guaranty > ZERO:
+                line_items.append(LineItem(label="TX Policy Guaranty Fee", amount=_round_cents(fee_guaranty), category="title"))
             if tax_proration > ZERO:
                 line_items.append(LineItem(label="Property Tax Proration", amount=_round_cents(tax_proration), category="government", note=proration_note))
             if home_warranty > ZERO:
@@ -346,6 +381,7 @@ class TitleCalculatorService:
                 line_items.append(LineItem(label="Seller Concessions", amount=_round_cents(seller_concessions), category="other"))
             if miscellaneous > ZERO:
                 line_items.append(LineItem(label="Miscellaneous Fees", amount=_round_cents(miscellaneous), category="other"))
+            line_items.extend(custom_seller_items)
 
             result = SellerNetSheetResult(
                 net_proceeds=_round_cents(net_proceeds), sale_price=_round_cents(sale_price),
@@ -435,10 +471,32 @@ class TitleCalculatorService:
             tesc = (at / Decimal("12")) * Decimal(mt)
 
             # Total closing costs (fixed fees + title + endorsements + lender)
+            # Custom fees (buyer side)
+            custom_buyer_total = ZERO
+            custom_buyer_items: List[LineItem] = []
+            for cfe in fees.get("custom_fees", []):
+                if not isinstance(cfe, dict):
+                    continue
+                side = cfe.get("side", "seller")
+                if side not in ("buyer", "both"):
+                    continue
+                label = cfe.get("label", "Custom Fee")
+                fee_type = cfe.get("type", "flat")
+                amount = _to_decimal(cfe.get("amount", 0))
+                if fee_type == "percent":
+                    computed = pp * amount / Decimal("100")
+                else:
+                    computed = amount
+                if computed > ZERO:
+                    pct_note = f" ({amount}%)" if fee_type == "percent" else ""
+                    custom_buyer_total += computed
+                    custom_buyer_items.append(LineItem(label=f"{label}{pct_note}", amount=_round_cents(computed), category="custom"))
+
             tcc = (ltp + cf + rf
                    + t19 + survey_cover + t17 + t36 + t30
                    + misc_lender + af + cr + fha + va
-                   + fee_tax_cert + fee_e_recording_buyer)
+                   + fee_tax_cert + fee_e_recording_buyer
+                   + custom_buyer_total)
 
             # Cash to close = down + closing + prepaids + inspections - seller credit
             ctc = dp + tcc + pi + pins + tesc + survey + pest + home_insp - sc
@@ -503,6 +561,8 @@ class TitleCalculatorService:
                 LineItem(label="Tax Certificates", amount=_round_cents(fee_tax_cert), category="government"),
                 LineItem(label="E-Recording Fee", amount=_round_cents(fee_e_recording_buyer), category="government"),
             ])
+
+            items.extend(custom_buyer_items)
 
             if sc > ZERO:
                 items.append(LineItem(label="Seller Concession", amount=_round_cents(-sc), category="credits"))

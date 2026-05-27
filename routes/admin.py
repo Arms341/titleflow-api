@@ -160,6 +160,7 @@ DEFAULT_FEES = {
     "origination_rate_pct": 1.0,
     "default_per_diem_rate_pct": 6.5,
     "title_search_fee_amount": 175.00,
+    "custom_fees": [],
     "endorsements": {
         "t19": {"amount": 80.99, "enabled": True, "label": "T-19 Restrictions/Encroachments"},
         "survey_cover": {"amount": 99.15, "enabled": True, "label": "Survey Cover (T-19.1)"},

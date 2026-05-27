@@ -1,7 +1,9 @@
 """
-models/company.py  v1.0.0
+models/company.py  v1.1.0
 Locked template — JARVIS title_company gig.
 Company branding configuration. Singleton — one row enforced in service layer.
+
+v1.1.0: Added fee_settings (JSON text) for admin-configurable fees and toggles.
 """
 import logging
 from datetime import datetime
@@ -29,6 +31,7 @@ class Company(Base):
     tagline = Column(String(500), nullable=True)
     disclaimer_text = Column(Text, nullable=True)
     order_submission_email = Column(String(255), nullable=True)
+    fee_settings = Column(Text, nullable=True)  # JSON blob for configurable fees
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

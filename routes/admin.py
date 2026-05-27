@@ -1,8 +1,9 @@
 """
-routes/admin.py  v1.0.0
-Admin analytics dashboard endpoints.
-Provides agent activity stats, sheets/orders metrics, top agents.
+routes/admin.py  v1.1.0
+Admin analytics dashboard + fee settings management.
+v1.1.0: Added GET/PUT /admin/fee-settings for configurable fees and toggles.
 """
+import json
 import logging
 from datetime import datetime, timedelta
 
@@ -15,6 +16,7 @@ from auth.dependencies import get_admin_user
 from models.user import User
 from models.saved_sheet import SavedSheet
 from models.order import Order
+from services.company_service import CompanyService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["admin"])
@@ -139,3 +141,92 @@ def top_agents(
     except Exception as exc:
         logger.error(f"[ADMIN] top_agents failed: {exc}")
         raise HTTPException(status_code=500, detail="Failed to fetch top agents")
+
+
+DEFAULT_FEES = {
+    "closing_fee_per_side": 300.00,
+    "recording_fee": 33.00,
+    "deed_prep_fee": 150.00,
+    "release_prep_fee": 50.00,
+    "tax_cert_fee": 10.00,
+    "e_recording_fee_seller": 19.35,
+    "e_recording_fee_buyer": 6.45,
+    "guaranty_fee": 2.00,
+    "survey_fee": 500.00,
+    "default_home_warranty": 700.00,
+    "appraisal_fee": 550.00,
+    "credit_report_fee": 35.00,
+    "flood_cert_fee": 20.00,
+    "origination_rate_pct": 1.0,
+    "default_per_diem_rate_pct": 6.5,
+    "endorsements": {
+        "t19": {"amount": 80.99, "enabled": True, "label": "T-19 Restrictions/Encroachments"},
+        "survey_cover": {"amount": 99.15, "enabled": True, "label": "Survey Cover (T-19.1)"},
+        "t17": {"amount": 25.00, "enabled": True, "label": "T-17 Access"},
+        "t36": {"amount": 25.00, "enabled": True, "label": "T-36 Environmental Lien"},
+        "t30": {"amount": 25.00, "enabled": True, "label": "T-30 Mortgagee"}
+    },
+    "seller_toggles": {
+        "recording_fee": True,
+        "transfer_tax": True,
+        "tax_cert": True,
+        "e_recording": True,
+        "guaranty_fee": True,
+        "home_warranty": True,
+        "survey": True,
+        "per_diem_interest": True
+    }
+}
+
+
+@router.get("/fee-settings")
+def get_fee_settings(
+    current_user=Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Get current fee settings (merged with defaults)."""
+    try:
+        svc = CompanyService()
+        svc._db = db
+        company = svc.get_company()
+        stored = {}
+        if company and company.fee_settings:
+            try:
+                stored = json.loads(company.fee_settings)
+            except (json.JSONDecodeError, TypeError):
+                pass
+        # Deep merge: defaults + stored overrides
+        merged = {**DEFAULT_FEES, **stored}
+        if "endorsements" in DEFAULT_FEES:
+            merged["endorsements"] = {**DEFAULT_FEES["endorsements"], **stored.get("endorsements", {})}
+        if "seller_toggles" in DEFAULT_FEES:
+            merged["seller_toggles"] = {**DEFAULT_FEES["seller_toggles"], **stored.get("seller_toggles", {})}
+        return merged
+    except Exception as exc:
+        logger.error(f"[ADMIN] get_fee_settings failed: {exc}")
+        raise HTTPException(status_code=500, detail="Failed to fetch fee settings")
+
+
+@router.put("/fee-settings")
+def update_fee_settings(
+    settings: dict,
+    current_user=Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Update fee settings. Saves full JSON blob."""
+    try:
+        svc = CompanyService()
+        svc._db = db
+        company = svc.get_company()
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
+        company.fee_settings = json.dumps(settings)
+        db.commit()
+        db.refresh(company)
+        logger.info(f"[ADMIN] Fee settings updated by {current_user.email}")
+        return json.loads(company.fee_settings)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"[ADMIN] update_fee_settings failed: {exc}")
+        raise HTTPException(status_code=500, detail="Failed to update fee settings")

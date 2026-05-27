@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { api } from '../lib/api';
 
 const CALCS = [
@@ -18,6 +20,8 @@ const CALCS = [
 
 const fmt = (v: any) => { if (v == null) return '$0.00'; const n = typeof v === 'string' ? parseFloat(v) : v; return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n); };
 const pct = (v: any) => { if (v == null) return '0%'; return parseFloat(v).toFixed(2) + '%'; };
+
+const DONUT_COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1'];
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>{children}</div>;
@@ -59,11 +63,114 @@ function Placeholder() {
   );
 }
 
+function OrderFormModal({ sheet, onClose, onSuccess }: { sheet: any; onClose: () => void; onSuccess: (order: any) => void }) {
+  const inp = sheet.input_data || {};
+  const out = sheet.output_data || {};
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    buyer_name: sheet.sheet_type === 'buyer' ? (sheet.client_name || inp.client_name || '') : '',
+    buyer_email: '', buyer_phone: '',
+    seller_name: sheet.sheet_type === 'seller' ? (sheet.client_name || inp.client_name || '') : '',
+    seller_email: '', seller_phone: '',
+    lender_name: '', loan_officer_name: '', escrow_officer_preference: '',
+    property_address: sheet.property_address || inp.property_address || '',
+    contract_date: '', estimated_closing_date: inp.closing_date || '',
+    notes: '',
+  });
+  const upd = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setSubmitting(true); setError(null);
+    try {
+      const res = await api.post('/orders/', { ...form, saved_sheet_id: sheet.id, order_type: 'purchase', status: 'submitted', contract_date: form.contract_date || null, estimated_closing_date: form.estimated_closing_date || null });
+      onSuccess(res.data);
+    } catch (e: any) { setError(e.response?.data?.detail || 'Submission failed'); }
+    setSubmitting(false);
+  };
+  const fi = (label: string, field: string, type = 'text', ph = '') => (
+    <div><label className="block text-xs text-gray-500 mb-1">{label}</label>
+    <input type={type} value={(form as any)[field]} onChange={e => upd(field, e.target.value)} placeholder={ph}
+      className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" /></div>
+  );
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white border-b px-6 py-4 rounded-t-xl">
+          <h2 className="text-lg font-bold text-gray-900">Submit Title Order</h2>
+          <p className="text-sm text-gray-500">Complete the details below to submit to HUB City Title</p>
+        </div>
+        <form onSubmit={submit} className="p-6 space-y-5">
+          <div><h3 className="text-sm font-semibold text-gray-700 uppercase mb-2">Property</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="md:col-span-2">{fi('Property Address', 'property_address')}</div>
+              {fi('Contract Date', 'contract_date', 'date')}{fi('Est. Closing Date', 'estimated_closing_date', 'date')}
+            </div></div>
+          <div><h3 className="text-sm font-semibold text-gray-700 uppercase mb-2">Seller</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">{fi('Name', 'seller_name', 'text', 'Jane Doe')}{fi('Email', 'seller_email', 'email', 'jane@email.com')}{fi('Phone', 'seller_phone', 'tel', '(806) 555-1234')}</div></div>
+          <div><h3 className="text-sm font-semibold text-gray-700 uppercase mb-2">Buyer</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">{fi('Name', 'buyer_name', 'text', 'John Smith')}{fi('Email', 'buyer_email', 'email', 'john@email.com')}{fi('Phone', 'buyer_phone', 'tel', '(806) 555-5678')}</div></div>
+          <div><h3 className="text-sm font-semibold text-gray-700 uppercase mb-2">Lender</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">{fi('Lender Name', 'lender_name', 'text', 'First National Bank')}{fi('Loan Officer', 'loan_officer_name', 'text', 'Mike Johnson')}{fi('Escrow Preference', 'escrow_officer_preference')}</div></div>
+          <div><label className="block text-xs text-gray-500 mb-1">Notes</label>
+            <textarea value={form.notes} onChange={e => upd('notes', e.target.value)} rows={2} placeholder="Any special instructions..." className="w-full px-3 py-2 border rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500" /></div>
+          {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{error}</div>}
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2.5 text-sm text-gray-700 border rounded-lg hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={submitting} className="px-6 py-2.5 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 shadow-md text-sm disabled:opacity-50">{submitting ? 'Submitting...' : 'Submit Title Order'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function SignaturePadFullScreen({ sheet, onClose, onSigned }: { sheet: any; onClose: () => void; onSigned: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [drawing, setDrawing] = useState(false);
+  const [hasDrawn, setHasDrawn] = useState(false);
+  const [signerName, setSignerName] = useState(sheet.client_name || '');
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    const dpr = window.devicePixelRatio || 1; const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr); ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  }, []);
+  const getPos = (e: React.MouseEvent | React.TouchEvent) => { const r = canvasRef.current!.getBoundingClientRect(); if ('touches' in e) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top }; return { x: (e as React.MouseEvent).clientX - r.left, y: (e as React.MouseEvent).clientY - r.top }; };
+  const start = (e: React.MouseEvent | React.TouchEvent) => { e.preventDefault(); const ctx = canvasRef.current?.getContext('2d'); if (!ctx) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); setDrawing(true); setHasDrawn(true); };
+  const draw = (e: React.MouseEvent | React.TouchEvent) => { if (!drawing) return; e.preventDefault(); const ctx = canvasRef.current?.getContext('2d'); if (!ctx) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+  const stop = () => setDrawing(false);
+  const clear = () => { const c = canvasRef.current; if (!c) return; c.getContext('2d')?.clearRect(0, 0, c.width, c.height); setHasDrawn(false); };
+  const submit = async () => {
+    if (!canvasRef.current || !hasDrawn) return; setSubmitting(true);
+    try { await api.post(`/saved_sheets/${sheet.id}/sign`, { signature: canvasRef.current.toDataURL('image/png'), signer_name: signerName }); setDone(true); setTimeout(() => { onSigned(); onClose(); }, 2000); }
+    catch (e: any) { alert(e.response?.data?.detail || 'Signature failed'); } setSubmitting(false);
+  };
+  if (done) return (<div className="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center"><div className="text-6xl mb-4">&#9989;</div><h2 className="text-2xl font-bold text-emerald-800">Signed Successfully</h2><p className="text-gray-500 mt-2">Thank you, {signerName || 'Client'}!</p></div>);
+  return (
+    <div className="fixed inset-0 z-50 bg-white flex flex-col">
+      <div className="bg-slate-800 text-white px-6 py-4 flex items-center justify-between shrink-0"><div><h2 className="text-lg font-bold">Client Signature</h2><p className="text-sm text-slate-300">{sheet.property_address || 'Net Sheet'}</p></div><button onClick={onClose} className="text-slate-300 hover:text-white text-2xl px-2">&times;</button></div>
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-4 max-w-lg mx-auto w-full">
+        <p className="text-gray-600 text-center mb-4">By signing below, I acknowledge that I have reviewed the {sheet.sheet_type === 'seller' ? 'seller net sheet' : 'buyer estimate'} and understand that figures shown are estimates.</p>
+        <div className="w-full mb-4"><label className="block text-sm text-gray-500 mb-1">Your Name</label><input type="text" value={signerName} onChange={e => setSignerName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" /></div>
+        <div className="w-full border-2 border-gray-300 rounded-lg bg-gray-50 relative mb-4" style={{ touchAction: 'none' }}><canvas ref={canvasRef} className="w-full cursor-crosshair" style={{ height: '200px' }} onMouseDown={start} onMouseMove={draw} onMouseUp={stop} onMouseLeave={stop} onTouchStart={start} onTouchMove={draw} onTouchEnd={stop} /><div className="absolute bottom-3 left-4 right-4 border-b border-gray-400" /><span className="absolute bottom-1 left-4 text-xs text-gray-400">Sign here</span></div>
+        <div className="w-full flex gap-3"><button onClick={clear} className="flex-1 py-3 text-gray-700 border-2 border-gray-300 rounded-lg text-base font-medium hover:bg-gray-50">Clear</button><button onClick={submit} disabled={!hasDrawn || submitting} className="flex-[2] py-3 bg-emerald-600 text-white rounded-lg text-base font-bold hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed">{submitting ? 'Saving...' : 'Confirm Signature'}</button></div>
+      </div>
+    </div>
+  );
+}
+
 function ActionBar({ result, inputData, sheetType, onBack }: { result: any; inputData: any; sheetType: string; onBack: () => void }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<any>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderSubmitted, setOrderSubmitted] = useState<any>(null);
+  const [showSignature, setShowSignature] = useState(false);
+  const [isSigned, setIsSigned] = useState(false);
   const handleSave = async () => {
     setSaving(true);
     try { const res = await api.post('/saved_sheets/', { sheet_type: sheetType, property_address: inputData.property_address || '', client_name: inputData.client_name || '', county_id: inputData.county_id ? parseInt(inputData.county_id) : null, input_data: inputData, output_data: result }); setSaved(res.data); } catch (e: any) { console.error('Save error', e); }
@@ -71,7 +178,17 @@ function ActionBar({ result, inputData, sheetType, onBack }: { result: any; inpu
   };
   const handleShare = async () => {
     if (!saved?.id) return;
-    try { const res = await api.post(`/saved_sheets/${saved.id}/share`); const url = `${window.location.origin}/shared/${res.data.share_token}`; setShareUrl(url); navigator.clipboard.writeText(url); } catch (e) { console.error('Share error', e); }
+    try {
+      const res = await api.post(`/saved_sheets/${saved.id}/share`);
+      const url = `${window.location.origin}/shared/${res.data.share_token}`;
+      setShareUrl(url);
+      const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
+      if (canShare) {
+        await navigator.share({ title: `${sheetType === 'seller' ? 'Seller Net Sheet' : 'Buyer Estimate'} - ${inputData.property_address || 'Property'}`, text: `View your ${sheetType === 'seller' ? 'seller net sheet' : 'buyer estimate'} from HUB City Title`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch (e: any) { if (e.name !== 'AbortError') { try { if (shareUrl) await navigator.clipboard.writeText(shareUrl); } catch {} } }
   };
   const handlePdf = async () => {
     if (!saved?.id) return;
@@ -81,20 +198,134 @@ function ActionBar({ result, inputData, sheetType, onBack }: { result: any; inpu
   };
   return (
     <div className="mt-4 space-y-2">
-      {!saved ? (<button onClick={handleSave} disabled={saving} className="w-full py-2 bg-gray-800 text-white rounded-md text-sm hover:bg-gray-900">{saving ? 'Saving...' : '💾 Save Sheet'}</button>
-      ) : (<div className="grid grid-cols-2 gap-2"><button onClick={handleShare} className="py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">🔗 Share</button><button onClick={handlePdf} disabled={downloading} className="py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">{downloading ? '...' : '📄 PDF'}</button></div>)}
-      {shareUrl && (<div className="w-full p-3 bg-blue-50 border border-blue-200 rounded-md"><p className="text-sm text-blue-800 font-medium">Share link copied!</p><a href={shareUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline break-all">{shareUrl}</a></div>)}
+      {!saved ? (<button onClick={handleSave} disabled={saving} className="w-full py-2 bg-gray-800 text-white rounded-md text-sm hover:bg-gray-900">{saving ? 'Saving...' : 'Save Sheet'}</button>
+      ) : (
+        <>
+          {!orderSubmitted ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button onClick={handleShare} className="py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Share</button>
+              <button onClick={handlePdf} disabled={downloading} className="py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">{downloading ? '...' : 'PDF'}</button>
+              <button onClick={() => setShowOrderForm(true)} className="py-2 bg-amber-600 text-white rounded-md text-sm hover:bg-amber-700 font-semibold">Submit Order</button>
+              {!isSigned ? (
+                <button onClick={() => setShowSignature(true)} className="py-2 bg-emerald-600 text-white rounded-md text-sm hover:bg-emerald-700 font-semibold">Get Signature</button>
+              ) : (
+                <span className="py-2 bg-emerald-100 text-emerald-800 rounded-md text-sm text-center font-medium">Signed &#10003;</span>
+              )}
+            </div>
+          ) : (
+            <div className="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-lg">
+              <p className="font-bold text-emerald-900 text-sm">Order #{orderSubmitted.id} Submitted!</p>
+              <p className="text-xs text-emerald-700">Check the Orders tab for updates.</p>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <button onClick={handleShare} className="py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Share</button>
+                <button onClick={handlePdf} disabled={downloading} className="py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">{downloading ? '...' : 'PDF'}</button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+      {shareUrl && (<div className="w-full p-3 bg-blue-50 border border-blue-200 rounded-md"><p className="text-sm text-blue-800 font-medium">Share link ready!</p><a href={shareUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline break-all">{shareUrl}</a></div>)}
+      {showOrderForm && saved && <OrderFormModal sheet={{ ...saved, input_data: inputData, output_data: result, sheet_type: sheetType }} onClose={() => setShowOrderForm(false)} onSuccess={(order) => { setShowOrderForm(false); setOrderSubmitted(order); }} />}
+      {showSignature && saved && <SignaturePadFullScreen sheet={{ ...saved, input_data: inputData, output_data: result, sheet_type: sheetType, property_address: inputData.property_address || '', client_name: inputData.client_name || '' }} onClose={() => setShowSignature(false)} onSigned={() => setIsSigned(true)} />}
+    </div>
+  );
+}
+
+function ShareOnlyBar({ result, inputData, sheetType }: { result: any; inputData: any; sheetType: string }) {
+  const [copied, setCopied] = useState(false);
+  const calcName = CALCS.find(c => c.slug === sheetType)?.name || sheetType;
+  const buildShareText = () => {
+    let text = `${calcName} Results\n`;
+    if (inputData.property_address) text += `Property: ${inputData.property_address}\n`;
+    text += `\n`;
+    if (result.line_items?.length) {
+      result.line_items.forEach((item: any) => { text += `${item.label}: ${fmt(item.amount)}\n`; });
+      text += `\n`;
+    }
+    if (result.net_proceeds != null) text += `Net Proceeds: ${fmt(result.net_proceeds)}\n`;
+    if (result.cash_to_close != null) text += `Cash to Close: ${fmt(result.cash_to_close)}\n`;
+    if (result.total_monthly_cost != null) text += `Total Monthly Cost: ${fmt(result.total_monthly_cost)}\n`;
+    if (result.total_holding_cost != null) text += `Total Holding Cost: ${fmt(result.total_holding_cost)}\n`;
+    if (result.recommendation) text += `\n${result.recommendation}\n`;
+    text += `\nPowered by HUB City Title`;
+    return text;
+  };
+  const handleShare = async () => {
+    const text = buildShareText();
+    const canShare = typeof navigator !== 'undefined' && 'share' in navigator;
+    if (canShare) {
+      try { await navigator.share({ title: `${calcName} - HUB City Title`, text }); return; } catch (e: any) { if (e.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 3000); } catch {}
+  };
+  return (
+    <div className="mt-4">
+      <button onClick={handleShare} className="w-full py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium">
+        {copied ? 'Copied to Clipboard!' : 'Share Results'}
+      </button>
     </div>
   );
 }
 
 function ResultPanel({ result, title }: { result: any; title: string }) {
+  // Build donut data from line_items
+  const donutData = (result.line_items || []).filter((item: any) => item.amount > 0).map((item: any, i: number) => ({
+    name: item.label, value: Math.abs(parseFloat(item.amount) || 0), color: DONUT_COLORS[i % DONUT_COLORS.length]
+  }));
+  const mainValue = result.net_proceeds ?? result.cash_to_close;
+  const mainLabel = result.net_proceeds != null ? 'Net Proceeds' : result.cash_to_close != null ? 'Cash to Close' : '';
+  const mainColor = result.net_proceeds != null ? 'text-emerald-600' : 'text-blue-600';
+
   return (
     <div className="bg-gray-50 p-6 rounded-lg border">
       <h3 className="font-semibold text-gray-700 mb-4">{title}</h3>
-      {result.net_proceeds != null && (<div className="text-center mb-4 p-4 bg-white rounded-lg border"><p className="text-xs text-gray-500 uppercase tracking-wide">Estimated Net Proceeds</p><p className="text-3xl font-bold text-emerald-600">{fmt(result.net_proceeds)}</p></div>)}
-      {result.cash_to_close != null && (<div className="text-center mb-4 p-4 bg-white rounded-lg border"><p className="text-xs text-gray-500 uppercase tracking-wide">Estimated Cash to Close</p><p className="text-3xl font-bold text-blue-600">{fmt(result.cash_to_close)}</p></div>)}
-      {result.line_items?.length > 0 && (<div className="space-y-0.5">{result.line_items.map((item: any, i: number) => (<div key={i} className="flex justify-between text-sm py-1.5 border-b border-gray-200"><span className="text-gray-700">{item.label}</span><span className="font-medium">{fmt(item.amount)}</span></div>))}</div>)}
+
+      {/* Donut Chart */}
+      {mainValue != null && donutData.length > 0 && (
+        <div className="mb-4">
+          <div className="relative">
+            <ResponsiveContainer width="100%" height={220}>
+              <PieChart>
+                <Pie data={donutData} cx="50%" cy="50%" innerRadius={65} outerRadius={95} paddingAngle={2} dataKey="value" stroke="none">
+                  {donutData.map((d: any, i: number) => <Cell key={i} fill={d.color} />)}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <p className="text-xs text-gray-500 uppercase tracking-wide">{mainLabel}</p>
+              <p className={`text-2xl font-bold ${mainColor}`}>{fmt(mainValue)}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fallback big number if no donut */}
+      {mainValue != null && donutData.length === 0 && (
+        <div className="text-center mb-4 p-4 bg-white rounded-lg border">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">{mainLabel}</p>
+          <p className={`text-3xl font-bold ${mainColor}`}>{fmt(mainValue)}</p>
+        </div>
+      )}
+
+      {/* Legend / Line Items */}
+      {donutData.length > 0 ? (
+        <div className="space-y-1">
+          {donutData.map((d: any, i: number) => (
+            <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: d.color }} />
+                <span className="text-gray-700">{d.name}</span>
+              </div>
+              <span className="font-medium">{fmt(d.value)}</span>
+            </div>
+          ))}
+        </div>
+      ) : result.line_items?.length > 0 ? (
+        <div className="space-y-0.5">{result.line_items.map((item: any, i: number) => (
+          <div key={i} className="flex justify-between text-sm py-1.5 border-b border-gray-200"><span className="text-gray-700">{item.label}</span><span className="font-medium">{fmt(item.amount)}</span></div>
+        ))}</div>
+      ) : null}
+
       <div className="mt-4 pt-3 border-t-2 border-gray-300 space-y-1">
         {result.sale_price != null && <div className="flex justify-between text-sm"><span>Sale Price</span><span className="font-semibold">{fmt(result.sale_price)}</span></div>}
         {result.purchase_price != null && <div className="flex justify-between text-sm"><span>Purchase Price</span><span className="font-semibold">{fmt(result.purchase_price)}</span></div>}
@@ -105,10 +336,27 @@ function ResultPanel({ result, title }: { result: any; title: string }) {
 }
 
 // ── 1. SELLER NET SHEET ──
-function SellerForm({ counties, onBack }: { counties: any[]; onBack: () => void }) {
-  const [f, sF] = useState({ sale_price: '350000', existing_loan_balance: '150000', seller_agent_commission_pct: '3.0', buyer_agent_commission_pct: '3.0', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', prior_title_insurance: false, years_since_prior_policy: '0', hoa_payoff: '0', seller_concessions: '0', include_home_warranty: true, include_survey: false, miscellaneous_fees: '0', annual_property_taxes: '2930', property_address: '', client_name: '' });
+function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () => void; prefill?: any }) {
+  const { data: taxDistricts } = useQuery({ queryKey: ['tax-districts'], queryFn: () => api.get('/tax_districts/').then(r => r.data) });
+  const districts = taxDistricts || [];
+  const defaults = { sale_price: '350000', existing_loan_balance: '150000', seller_agent_commission_pct: '3.0', buyer_agent_commission_pct: '3.0', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', prior_title_insurance: false, years_since_prior_policy: '0', hoa_payoff: '0', seller_concessions: '0', include_home_warranty: true, include_survey: false, miscellaneous_fees: '0', annual_property_taxes: '0', property_address: '', client_name: '', tax_district_id: '' };
+  const [f, sF] = useState(prefill ? { ...defaults, ...Object.fromEntries(Object.entries(prefill).filter(([_, v]) => v !== null && v !== undefined).map(([k, v]) => [k, String(v)])), prior_title_insurance: prefill.prior_title_insurance ?? false, include_home_warranty: prefill.include_home_warranty ?? true, include_survey: prefill.include_survey ?? false } : defaults);
   const [result, setResult] = useState<any>(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
-  const s = (k: string, v: any) => sF(p => ({ ...p, [k]: v }));
+  const s = (k: string, v: any) => {
+    const next = { ...f, [k]: v };
+    // Auto-calc taxes when district or sale price changes
+    if (k === 'tax_district_id' || k === 'sale_price') {
+      const distId = k === 'tax_district_id' ? v : next.tax_district_id;
+      const price = k === 'sale_price' ? parseFloat(v) : parseFloat(next.sale_price);
+      if (distId && distId !== 'custom') {
+        const dist = districts.find((d: any) => d.id.toString() === distId.toString());
+        if (dist && !isNaN(price)) {
+          next.annual_property_taxes = (price * parseFloat(dist.combined_rate_pct) / 100).toFixed(2);
+        }
+      }
+    }
+    sF(next);
+  };
   const calc = async () => { setLoading(true); setError(''); try { const res = await api.post('/calculators/seller-net-sheet', { ...f, sale_price: parseFloat(f.sale_price), existing_loan_balance: parseFloat(f.existing_loan_balance), seller_agent_commission_pct: parseFloat(f.seller_agent_commission_pct), buyer_agent_commission_pct: parseFloat(f.buyer_agent_commission_pct), county_id: parseInt(f.county_id), hoa_payoff: parseFloat(f.hoa_payoff), seller_concessions: parseFloat(f.seller_concessions), miscellaneous_fees: parseFloat(f.miscellaneous_fees), annual_property_taxes: parseFloat(f.annual_property_taxes), years_since_prior_policy: f.prior_title_insurance ? parseInt(f.years_since_prior_policy) : null }); setResult(res.data); } catch (e: any) { setError(e.response?.data?.detail || 'Calculation failed'); } setLoading(false); };
   return (
     <div className="mt-4"><Header icon="🏠" name="Seller Net Sheet" desc="Calculate estimated net proceeds for seller" onBack={onBack} />
@@ -125,7 +373,20 @@ function SellerForm({ counties, onBack }: { counties: any[]; onBack: () => void 
           <Section title="Commissions" />
           <div className="grid grid-cols-2 gap-3"><Field label="Seller Agent"><Inp value={f.seller_agent_commission_pct} onChange={(v: string) => s('seller_agent_commission_pct', v)} suffix="%" /></Field><Field label="Buyer Agent"><Inp value={f.buyer_agent_commission_pct} onChange={(v: string) => s('buyer_agent_commission_pct', v)} suffix="%" /></Field></div>
           <Section title="Tax & Options" />
-          <Field label="Annual Property Taxes"><Inp value={f.annual_property_taxes} onChange={(v: string) => s('annual_property_taxes', v)} prefix="$" /></Field>
+          <Field label="Tax District">
+            <select value={f.tax_district_id} onChange={e => s('tax_district_id', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+              <option value="custom">Custom (enter manually)</option>
+              {districts.map((d: any) => <option key={d.id} value={d.id}>{d.name} — {parseFloat(d.combined_rate_pct).toFixed(2)}%</option>)}
+            </select>
+          </Field>
+          <Field label="Annual Property Taxes">
+            <div className="relative">
+              <Inp value={f.annual_property_taxes} onChange={(v: string) => { sF(p => ({ ...p, annual_property_taxes: v, tax_district_id: 'custom' })); }} prefix="$" />
+              {f.tax_district_id && f.tax_district_id !== 'custom' && (
+                <span className="absolute right-3 top-2 text-xs text-emerald-600 font-medium">auto</span>
+              )}
+            </div>
+          </Field>
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.include_home_warranty} onChange={e => s('include_home_warranty', e.target.checked)} /> Include Home Warranty</label>
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.include_survey} onChange={e => s('include_survey', e.target.checked)} /> Include Survey</label>
@@ -143,11 +404,27 @@ function SellerForm({ counties, onBack }: { counties: any[]; onBack: () => void 
 }
 
 // ── 2. BUYER ESTIMATE ──
-function BuyerForm({ counties, onBack }: { counties: any[]; onBack: () => void }) {
-  const [f, sF] = useState({ purchase_price: '350000', loan_amount: '280000', loan_type: 'conventional', interest_rate: '6.75', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', annual_property_taxes: '2930', annual_homeowners_insurance: '1800', months_insurance_prepaid: '3', months_tax_escrow: '3', seller_paid_closing_costs: '0', property_address: '', client_name: '' });
+function BuyerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () => void; prefill?: any }) {
+  const { data: taxDistricts } = useQuery({ queryKey: ['tax-districts'], queryFn: () => api.get('/tax_districts/').then(r => r.data) });
+  const districts = taxDistricts || [];
+  const defaults = { purchase_price: '350000', loan_amount: '280000', loan_type: 'conventional', interest_rate: '6.75', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', annual_property_taxes: '0', annual_homeowners_insurance: '2850', months_insurance_prepaid: '14', months_tax_escrow: '4', seller_paid_closing_costs: '0', property_address: '', client_name: '', tax_district_id: '', misc_lender_fees: '1100', appraisal_fee: '450', credit_report_fee: '40', survey_fee: '500', pest_inspection_fee: '100', home_inspection_fee: '400', escrow_fee: '250', doc_prep_buyer: '225', t19_endorsement: '80.99', survey_cover_endorsement: '99.15', t17_endorsement: '25', t36_endorsement: '25', t30_endorsement: '25' };
+  const [f, sF] = useState(prefill ? { ...defaults, ...Object.fromEntries(Object.entries(prefill).filter(([_, v]) => v !== null && v !== undefined).map(([k, v]) => [k, String(v)])) } : defaults);
   const [result, setResult] = useState<any>(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
-  const s = (k: string, v: any) => sF(p => ({ ...p, [k]: v }));
-  const calc = async () => { setLoading(true); setError(''); try { const res = await api.post('/calculators/buyer-estimate', { ...f, purchase_price: parseFloat(f.purchase_price), loan_amount: parseFloat(f.loan_amount), interest_rate: parseFloat(f.interest_rate), county_id: parseInt(f.county_id), annual_property_taxes: parseFloat(f.annual_property_taxes), annual_homeowners_insurance: parseFloat(f.annual_homeowners_insurance), months_insurance_prepaid: parseInt(f.months_insurance_prepaid), months_tax_escrow: parseInt(f.months_tax_escrow), seller_paid_closing_costs: parseFloat(f.seller_paid_closing_costs) }); setResult(res.data); } catch (e: any) { setError(e.response?.data?.detail || 'Calculation failed'); } setLoading(false); };
+  const s = (k: string, v: any) => {
+    const next = { ...f, [k]: v };
+    if (k === 'tax_district_id' || k === 'purchase_price') {
+      const distId = k === 'tax_district_id' ? v : next.tax_district_id;
+      const price = k === 'purchase_price' ? parseFloat(v) : parseFloat(next.purchase_price);
+      if (distId && distId !== 'custom') {
+        const dist = districts.find((d: any) => d.id.toString() === distId.toString());
+        if (dist && !isNaN(price)) {
+          next.annual_property_taxes = (price * parseFloat(dist.combined_rate_pct) / 100).toFixed(2);
+        }
+      }
+    }
+    sF(next);
+  };
+  const calc = async () => { setLoading(true); setError(''); try { const res = await api.post('/calculators/buyer-estimate', { ...f, purchase_price: parseFloat(f.purchase_price), loan_amount: parseFloat(f.loan_amount), interest_rate: parseFloat(f.interest_rate), county_id: parseInt(f.county_id), annual_property_taxes: parseFloat(f.annual_property_taxes), annual_homeowners_insurance: parseFloat(f.annual_homeowners_insurance), months_insurance_prepaid: parseInt(f.months_insurance_prepaid), months_tax_escrow: parseInt(f.months_tax_escrow), seller_paid_closing_costs: parseFloat(f.seller_paid_closing_costs), misc_lender_fees: parseFloat(f.misc_lender_fees), appraisal_fee: parseFloat(f.appraisal_fee), credit_report_fee: parseFloat(f.credit_report_fee), survey_fee: parseFloat(f.survey_fee), pest_inspection_fee: parseFloat(f.pest_inspection_fee), home_inspection_fee: parseFloat(f.home_inspection_fee), escrow_fee: parseFloat(f.escrow_fee), doc_prep_buyer: parseFloat(f.doc_prep_buyer), t19_endorsement: parseFloat(f.t19_endorsement), survey_cover_endorsement: parseFloat(f.survey_cover_endorsement), t17_endorsement: parseFloat(f.t17_endorsement), t36_endorsement: parseFloat(f.t36_endorsement), t30_endorsement: parseFloat(f.t30_endorsement) }); setResult(res.data); } catch (e: any) { setError(e.response?.data?.detail || 'Calculation failed'); } setLoading(false); };
   return (
     <div className="mt-4"><Header icon="🔑" name="Buyer Estimate" desc="Estimate buyer closing costs" onBack={onBack} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -163,14 +440,80 @@ function BuyerForm({ counties, onBack }: { counties: any[]; onBack: () => void }
           <Field label="Loan Type"><select value={f.loan_type} onChange={e => s('loan_type', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"><option value="conventional">Conventional</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option></select></Field>
           <Field label="Interest Rate"><Inp value={f.interest_rate} onChange={(v: string) => s('interest_rate', v)} suffix="%" /></Field>
           <Section title="Tax & Insurance" />
-          <Field label="Annual Property Taxes"><Inp value={f.annual_property_taxes} onChange={(v: string) => s('annual_property_taxes', v)} prefix="$" /></Field>
+          <Field label="Tax District">
+            <select value={f.tax_district_id} onChange={e => s('tax_district_id', e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+              <option value="custom">Custom (enter manually)</option>
+              {districts.map((d: any) => <option key={d.id} value={d.id}>{d.name} — {parseFloat(d.combined_rate_pct).toFixed(2)}%</option>)}
+            </select>
+          </Field>
+          <Field label="Annual Property Taxes">
+            <div className="relative">
+              <Inp value={f.annual_property_taxes} onChange={(v: string) => { sF(p => ({ ...p, annual_property_taxes: v, tax_district_id: 'custom' })); }} prefix="$" />
+              {f.tax_district_id && f.tax_district_id !== 'custom' && (
+                <span className="absolute right-3 top-2 text-xs text-emerald-600 font-medium">auto</span>
+              )}
+            </div>
+          </Field>
           <Field label="Annual Homeowners Insurance"><Inp value={f.annual_homeowners_insurance} onChange={(v: string) => s('annual_homeowners_insurance', v)} prefix="$" /></Field>
           <div className="grid grid-cols-2 gap-3"><Field label="Months Insurance Prepaid"><Inp value={f.months_insurance_prepaid} onChange={(v: string) => s('months_insurance_prepaid', v)} /></Field><Field label="Months Tax Escrow"><Inp value={f.months_tax_escrow} onChange={(v: string) => s('months_tax_escrow', v)} /></Field></div>
+          <Section title="Lender Fees" />
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Misc. Lender Fees"><Inp value={f.misc_lender_fees} onChange={(v: string) => s('misc_lender_fees', v)} prefix="$" /></Field>
+            <Field label="Appraisal"><Inp value={f.appraisal_fee} onChange={(v: string) => s('appraisal_fee', v)} prefix="$" /></Field>
+            <Field label="Credit Report"><Inp value={f.credit_report_fee} onChange={(v: string) => s('credit_report_fee', v)} prefix="$" /></Field>
+          </div>
+          <Section title="Inspections" />
+          <div className="grid grid-cols-3 gap-3">
+            <Field label="Survey"><Inp value={f.survey_fee} onChange={(v: string) => s('survey_fee', v)} prefix="$" /></Field>
+            <Field label="Pest Inspection"><Inp value={f.pest_inspection_fee} onChange={(v: string) => s('pest_inspection_fee', v)} prefix="$" /></Field>
+            <Field label="Home Inspection"><Inp value={f.home_inspection_fee} onChange={(v: string) => s('home_inspection_fee', v)} prefix="$" /></Field>
+          </div>
+          <Section title="Title Endorsements" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Escrow Fee"><Inp value={f.escrow_fee} onChange={(v: string) => s('escrow_fee', v)} prefix="$" /></Field>
+            <Field label="Doc Prep"><Inp value={f.doc_prep_buyer} onChange={(v: string) => s('doc_prep_buyer', v)} prefix="$" /></Field>
+            <Field label="T-19 Endorsement"><Inp value={f.t19_endorsement} onChange={(v: string) => s('t19_endorsement', v)} prefix="$" /></Field>
+            <Field label="Survey Cover"><Inp value={f.survey_cover_endorsement} onChange={(v: string) => s('survey_cover_endorsement', v)} prefix="$" /></Field>
+            <Field label="T-17 Mortgagee's"><Inp value={f.t17_endorsement} onChange={(v: string) => s('t17_endorsement', v)} prefix="$" /></Field>
+            <Field label="T-36 Mortgagee's"><Inp value={f.t36_endorsement} onChange={(v: string) => s('t36_endorsement', v)} prefix="$" /></Field>
+            <Field label="T-30 Mortgagee's"><Inp value={f.t30_endorsement} onChange={(v: string) => s('t30_endorsement', v)} prefix="$" /></Field>
+          </div>
           <Section title="Credits" />
           <Field label="Seller-Paid Closing Costs"><Inp value={f.seller_paid_closing_costs} onChange={(v: string) => s('seller_paid_closing_costs', v)} prefix="$" /></Field>
           <CalcBtn onClick={calc} loading={loading} label="Calculate Cash to Close" /><ErrMsg error={error} />
         </div>
-        <div>{result ? (<><ResultPanel result={result} title="Buyer Estimate Results" /><ActionBar result={result} inputData={f} sheetType="buyer" onBack={() => setResult(null)} /></>) : <Placeholder />}</div>
+        <div>{result ? (<>
+          {/* Monthly Payment donut */}
+          {result.monthly_payment && (
+            <div className="bg-gray-50 p-6 rounded-lg border mb-4">
+              <h3 className="font-semibold text-gray-700 mb-4">Monthly Payment</h3>
+              <div className="relative">
+                <ResponsiveContainer width="100%" height={180}>
+                  <PieChart><Pie data={[
+                    { name: 'P&I', value: parseFloat(result.monthly_pi || 0), color: '#3b82f6' },
+                    { name: 'Taxes', value: parseFloat(result.monthly_taxes || 0), color: '#10b981' },
+                    { name: 'Insurance', value: parseFloat(result.monthly_insurance || 0), color: '#f59e0b' },
+                    ...(result.monthly_pmi ? [{ name: 'PMI', value: parseFloat(result.monthly_pmi), color: '#ef4444' }] : []),
+                  ].filter(d => d.value > 0)} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={2} dataKey="value" stroke="none">
+                    {[{ color: '#3b82f6' }, { color: '#10b981' }, { color: '#f59e0b' }, { color: '#ef4444' }].map((d, i) => <Cell key={i} fill={d.color} />)}
+                  </Pie></PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="text-xs text-gray-500">MONTHLY</p>
+                  <p className="text-xl font-bold text-gray-900">{fmt(result.monthly_payment)}</p>
+                </div>
+              </div>
+              <div className="space-y-1 mt-2">
+                <div className="flex items-center justify-between text-sm"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-blue-500" /><span>P&I</span></div><span className="font-medium">{fmt(result.monthly_pi)}</span></div>
+                <div className="flex items-center justify-between text-sm"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-emerald-500" /><span>Taxes</span></div><span className="font-medium">{fmt(result.monthly_taxes)}</span></div>
+                <div className="flex items-center justify-between text-sm"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-amber-500" /><span>Insurance</span></div><span className="font-medium">{fmt(result.monthly_insurance)}</span></div>
+                {result.monthly_pmi && <div className="flex items-center justify-between text-sm"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm bg-red-500" /><span>PMI</span></div><span className="font-medium">{fmt(result.monthly_pmi)}</span></div>}
+              </div>
+            </div>
+          )}
+          <ResultPanel result={result} title="Buyer Estimate Results" />
+          <ActionBar result={result} inputData={f} sheetType="buyer" onBack={() => setResult(null)} />
+        </>) : <Placeholder />}</div>
       </div>
     </div>
   );
@@ -227,6 +570,7 @@ function TruValueForm({ counties, onBack }: { counties: any[]; onBack: () => voi
           ))}
         </div>
       )}
+      {result && <ShareOnlyBar result={result} inputData={f} sheetType="truvalue" />}
     </div>
   );
 }
@@ -255,7 +599,9 @@ function SellVsRentForm({ onBack }: { onBack: () => void }) {
           <table className="w-full text-sm"><thead><tr className="border-b"><th className="text-left py-1">Year</th><th className="text-right">If Sell</th><th className="text-right">If Rent</th><th className="text-right">Diff</th></tr></thead><tbody>
             {result.projection?.map((y: any) => (<tr key={y.year} className="border-b"><td className="py-1">{y.year}</td><td className="text-right">{fmt(y.equity_if_sell)}</td><td className="text-right">{fmt(y.net_if_rent)}</td><td className={`text-right font-medium ${parseFloat(y.difference) >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{fmt(y.difference)}</td></tr>))}
           </tbody></table>
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="sell-vs-rent" />}
+        </div>
       </div>
     </div>
   );
@@ -284,7 +630,9 @@ function HoldingCostForm({ onBack }: { onBack: () => void }) {
           <div className="text-center mb-4 p-4 bg-white rounded-lg border"><p className="text-xs text-gray-500 uppercase">Monthly Cost</p><p className="text-3xl font-bold text-orange-600">{fmt(result.monthly_cost)}</p></div>
           <div className="text-center mb-4 p-4 bg-white rounded-lg border"><p className="text-xs text-gray-500 uppercase">Total ({f.months_holding} months)</p><p className="text-3xl font-bold text-red-600">{fmt(result.total_cost)}</p></div>
           {result.line_items?.map((item: any, i: number) => (<div key={i} className="flex justify-between text-sm py-1.5 border-b"><span>{item.label}</span><span className="font-medium">{fmt(item.amount)}</span></div>))}
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="holding-cost" />}
+        </div>
       </div>
     </div>
   );
@@ -313,7 +661,9 @@ function BuydownForm({ onBack }: { onBack: () => void }) {
           <table className="w-full text-sm"><thead><tr className="border-b"><th className="text-left py-1">Year</th><th className="text-right">Rate</th><th className="text-right">Payment</th><th className="text-right">Savings/mo</th></tr></thead><tbody>
             {result.schedule?.map((y: any) => (<tr key={y.year} className="border-b"><td className="py-1">{y.year}</td><td className="text-right">{pct(y.rate)}</td><td className="text-right">{fmt(y.payment)}</td><td className="text-right text-emerald-600">{fmt(y.monthly_savings)}</td></tr>))}
           </tbody></table>
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="buydown" />}
+        </div>
       </div>
     </div>
   );
@@ -346,7 +696,9 @@ function ExtraPaymentForm({ onBack }: { onBack: () => void }) {
             <div className="p-3 bg-white rounded border"><p className="text-xs text-gray-500">Standard</p><p className="font-semibold">{result.standard?.months ? Math.round(result.standard.months / 12) + ' yrs' : '-'}</p><p className="text-xs text-gray-400">Interest: {fmt(result.standard?.total_interest)}</p></div>
             <div className="p-3 bg-white rounded border"><p className="text-xs text-gray-500">Accelerated</p><p className="font-semibold text-emerald-600">{result.accelerated?.months ? Math.round(result.accelerated.months / 12) + ' yrs' : '-'}</p><p className="text-xs text-gray-400">Interest: {fmt(result.accelerated?.total_interest)}</p></div>
           </div>
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="extra-payment" />}
+        </div>
       </div>
     </div>
   );
@@ -374,7 +726,9 @@ function BuyNowForm({ onBack }: { onBack: () => void }) {
           {result.current_scenario && (<div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded"><p className="text-xs text-emerald-700 uppercase font-semibold">Buy Now</p><p className="text-lg font-bold">{fmt(result.current_scenario.price)} at {pct(result.current_scenario.rate)}</p><p className="text-sm text-gray-600">Monthly: {fmt(result.current_scenario.monthly_payment)}</p></div>)}
           {result.future_scenarios?.map((sc: any, i: number) => (<div key={i} className="mb-3 p-4 bg-red-50 border border-red-200 rounded"><p className="text-xs text-red-700 uppercase font-semibold">Wait {sc.months_waited} months</p><p className="text-lg font-bold">{fmt(sc.price)} at {pct(sc.rate)}</p><p className="text-sm text-gray-600">Monthly: {fmt(sc.monthly_payment)} (+{fmt(sc.payment_increase)}/mo)</p><p className="text-sm text-red-600 font-semibold">Cost of waiting: {fmt(sc.total_cost_of_waiting)}</p></div>))}
           {result.recommendation && <p className="text-sm mt-3 p-3 bg-blue-50 border border-blue-200 rounded">{result.recommendation}</p>}
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="buy-now-vs-later" />}
+        </div>
       </div>
     </div>
   );
@@ -400,6 +754,7 @@ function PriceVsRateForm({ onBack }: { onBack: () => void }) {
           {result.matrix.map((cell: any, i: number) => (<tr key={i} className="border-b"><td className="p-2 border">{fmt(cell.price)}</td><td className="p-2 border text-center">{pct(cell.rate)}</td><td className="p-2 border text-center font-medium">{fmt(cell.monthly_payment)}</td><td className={`p-2 border text-center ${parseFloat(cell.payment_delta) > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{parseFloat(cell.payment_delta) > 0 ? '+' : ''}{fmt(cell.payment_delta)}</td></tr>))}
         </tbody></table>
       </div>)}
+      {result && <ShareOnlyBar result={result} inputData={f} sheetType="price-vs-rate" />}
     </div>
   );
 }
@@ -453,6 +808,7 @@ function ScenarioCompareForm({ counties, onBack }: { counties: any[]; onBack: ()
           <p className="text-sm text-gray-600 mt-1">{result.recommendation}</p>
         </div>
       </div>)}
+      {result && <ShareOnlyBar result={result} inputData={f} sheetType="scenario-compare" />}
     </div>
   );
 }
@@ -488,7 +844,9 @@ function BuyerCompensationForm({ onBack }: { onBack: () => void }) {
           {result.monthly_payment_impact && parseFloat(result.monthly_payment_impact) > 0 && <p className="text-sm text-gray-600">Monthly payment impact: +{fmt(result.monthly_payment_impact)}/mo</p>}
           {result.scenarios?.map((sc: any, i: number) => (<div key={i} className="mt-2 p-3 bg-white rounded border"><p className="font-medium text-sm">{sc.structure}</p><p className="text-xs text-gray-500">Buyer: {fmt(sc.buyer_cost)} | Seller: {fmt(sc.seller_cost)}</p>{sc.note && <p className="text-xs text-gray-400 mt-1">{sc.note}</p>}</div>))}
           {result.explainer_text && <p className="text-sm text-gray-600 mt-4 p-3 bg-gray-100 rounded">{result.explainer_text}</p>}
-        </div>) : <Placeholder />}</div>
+        </div>) : <Placeholder />}
+        {result && <ShareOnlyBar result={result} inputData={f} sheetType="buyer-compensation" />}
+        </div>
       </div>
     </div>
   );
@@ -496,13 +854,20 @@ function BuyerCompensationForm({ onBack }: { onBack: () => void }) {
 
 // ── MAIN PAGE ──
 export default function CalculatorPage() {
-  const [active, setActive] = useState<string | null>(null);
+  const location = useLocation();
+  const prefillState = location.state as { prefill?: any; sheetType?: string; openCalc?: string } | null;
+  const [active, setActive] = useState<string | null>(
+    prefillState?.openCalc ||
+    (prefillState?.sheetType === 'seller' ? 'seller-net-sheet' :
+    prefillState?.sheetType === 'buyer' ? 'buyer-estimate' : null)
+  );
+  const [prefill] = useState(prefillState?.prefill || null);
   const { data: counties } = useQuery({ queryKey: ['counties'], queryFn: () => api.get('/counties/').then(r => r.data) });
   const c = counties || [];
-  const onBack = () => setActive(null);
+  const onBack = () => { setActive(null); window.history.replaceState({}, ''); };
 
-  if (active === 'seller-net-sheet') return <div className="p-6 max-w-6xl mx-auto"><SellerForm counties={c} onBack={onBack} /></div>;
-  if (active === 'buyer-estimate') return <div className="p-6 max-w-6xl mx-auto"><BuyerForm counties={c} onBack={onBack} /></div>;
+  if (active === 'seller-net-sheet') return <div className="p-6 max-w-6xl mx-auto"><SellerForm counties={c} onBack={onBack} prefill={active === 'seller-net-sheet' ? prefill : undefined} /></div>;
+  if (active === 'buyer-estimate') return <div className="p-6 max-w-6xl mx-auto"><BuyerForm counties={c} onBack={onBack} prefill={active === 'buyer-estimate' ? prefill : undefined} /></div>;
   if (active === 'truvalue') return <div className="p-6 max-w-6xl mx-auto"><TruValueForm counties={c} onBack={onBack} /></div>;
   if (active === 'scenario-compare') return <div className="p-6 max-w-6xl mx-auto"><ScenarioCompareForm counties={c} onBack={onBack} /></div>;
   if (active === 'buyer-compensation') return <div className="p-6 max-w-6xl mx-auto"><BuyerCompensationForm onBack={onBack} /></div>;

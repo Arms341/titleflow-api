@@ -1,22 +1,26 @@
-// JARVIS App — Shared TypeScript types  v2.0.0
+// JARVIS App — Shared TypeScript types  v2.1.0
 // All API response shapes and domain models live here.
-// AI-generated pages import from this file — never redefine types inline.
 //
-// v2.0.0: DEBT #22 fix — User has is_active boolean (matches backend
-//         models/base.py User.is_active column).
+// v2.1.0: Added agent profile fields (brokerage_name, license_number, avatar_url, phone).
+//         Added AdminStats, TopAgent types for admin dashboard.
+// v2.0.0: DEBT #22 fix — User has is_active boolean.
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
+// -- Auth --
 
-export type UserRole = 'admin' | 'agent' | 'user';
+export type UserRole = 'admin' | 'agent' | 'user' | 'customer';
 export type UserStatus = 'active' | 'pending_approval' | 'inactive';
 
 export interface User {
   id: number;
   email: string;
-  full_name: string;
+  full_name: string | null;
+  phone: string | null;
   role: UserRole;
-  status: UserStatus;
+  status?: UserStatus;
   is_active: boolean;
+  avatar_url: string | null;
+  brokerage_name: string | null;
+  license_number: string | null;
   created_at: string;
   updated_at?: string;
 }
@@ -35,10 +39,38 @@ export interface RegisterInput {
   email: string;
   password: string;
   full_name: string;
-  [key: string]: unknown; // domain-specific fields added by AI
+  phone?: string;
+  brokerage_name?: string;
+  [key: string]: unknown;
 }
 
-// ── Company / Branding ────────────────────────────────────────────────────────
+export interface ProfileUpdateInput {
+  full_name?: string;
+  phone?: string;
+  brokerage_name?: string;
+  license_number?: string;
+  avatar_url?: string;
+}
+
+// -- Admin --
+
+export interface AdminStats {
+  agents: { total: number; active: number; pending_approval: number };
+  sheets: { total: number; this_week: number; this_month: number };
+  orders: { total: number; this_week: number; this_month: number; pending: number };
+  conversion_rate: number;
+}
+
+export interface TopAgent {
+  id: number;
+  email: string;
+  full_name: string | null;
+  brokerage_name: string | null;
+  sheet_count: number;
+  order_count: number;
+}
+
+// -- Company / Branding --
 
 export interface Company {
   id?: number;
@@ -54,7 +86,7 @@ export interface Company {
   disclaimer_text?: string;
 }
 
-// ── Pagination ────────────────────────────────────────────────────────────────
+// -- Pagination --
 
 export interface PaginatedResponse<T> {
   items: T[];
@@ -64,14 +96,12 @@ export interface PaginatedResponse<T> {
   pages: number;
 }
 
-// ── API Error ─────────────────────────────────────────────────────────────────
+// -- API Error --
 
 export interface ApiError {
   detail: string | { msg: string; type: string }[];
   status_code?: number;
 }
-
-// ── Utility ───────────────────────────────────────────────────────────────────
 
 export function getErrorMessage(err: unknown): string {
   if (!err) return 'An unknown error occurred';

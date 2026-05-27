@@ -1,12 +1,13 @@
-// HUB City Title — Navbar v3.0.0
-// Navy branded header with logo, nav links, user info
+// HUB City Title — Navbar v3.1.0
+// Navy branded header with logo, nav links, user info.
+// v3.1.0: Added Profile link (all users) + Admin link (admin only).
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, FileText, ShoppingBag, Calculator } from 'lucide-react';
+import { LogOut, LayoutDashboard, FileText, ShoppingBag, Calculator, UserCircle, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useBrand } from '@/contexts/BrandContext';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const { company } = useBrand();
   const navigate = useNavigate();
 
@@ -47,13 +48,21 @@ export default function Navbar() {
             <NavLink to="/orders" className={navLinkClass}>
               <ShoppingBag size={15} /> Orders
             </NavLink>
+            {isAdmin && (
+              <NavLink to="/admin" className={navLinkClass}>
+                <Shield size={15} /> Admin
+              </NavLink>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
             {user && (
-              <span className="hidden sm:block text-sm text-blue-200">
+              <NavLink to="/profile" className={({ isActive }) =>
+                `hidden sm:flex items-center gap-1.5 text-sm transition-colors ${isActive ? 'text-white' : 'text-blue-200 hover:text-white'}`
+              }>
+                <UserCircle size={16} />
                 {user.full_name || user.email}
-              </span>
+              </NavLink>
             )}
             <button
               onClick={() => { logout(); navigate('/login'); }}

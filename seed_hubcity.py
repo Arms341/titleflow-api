@@ -7,6 +7,7 @@ Usage:
 """
 import sys
 import os
+import json
 sys.path.insert(0, os.path.dirname(__file__))
 
 from decimal import Decimal
@@ -62,6 +63,43 @@ def seed():
             existing_company.tagline = "No Bull. Just Title."
             existing_company.disclaimer_text = "These figures are estimates only and are subject to change at closing. This is not a commitment to insure or a guarantee of fees. Actual costs may vary."
             existing_company.order_submission_email = admin_email
+            # Seed fee_settings if not already populated
+            if not existing_company.fee_settings:
+                existing_company.fee_settings = json.dumps({
+                    "closing_fee_per_side": 300.00,
+                    "recording_fee": 33.00,
+                    "deed_prep_fee": 150.00,
+                    "release_prep_fee": 50.00,
+                    "tax_cert_fee": 10.00,
+                    "e_recording_fee_seller": 19.35,
+                    "e_recording_fee_buyer": 6.45,
+                    "guaranty_fee": 2.00,
+                    "survey_fee": 500.00,
+                    "default_home_warranty": 700.00,
+                    "appraisal_fee": 550.00,
+                    "credit_report_fee": 35.00,
+                    "flood_cert_fee": 20.00,
+                    "origination_rate_pct": 1.0,
+                    "default_per_diem_rate_pct": 6.5,
+                    "endorsements": {
+                        "t19": {"amount": 80.99, "enabled": True, "label": "T-19 Restrictions/Encroachments"},
+                        "survey_cover": {"amount": 99.15, "enabled": True, "label": "Survey Cover (T-19.1)"},
+                        "t17": {"amount": 25.00, "enabled": True, "label": "T-17 Access"},
+                        "t36": {"amount": 25.00, "enabled": True, "label": "T-36 Environmental Lien"},
+                        "t30": {"amount": 25.00, "enabled": True, "label": "T-30 Mortgagee"}
+                    },
+                    "seller_toggles": {
+                        "recording_fee": True,
+                        "transfer_tax": True,
+                        "tax_cert": True,
+                        "e_recording": True,
+                        "guaranty_fee": True,
+                        "home_warranty": True,
+                        "survey": True,
+                        "per_diem_interest": True
+                    }
+                })
+                print("Seeded default fee_settings.")
             db.commit()
             print("Updated company branding to HUB City Title.")
         else:

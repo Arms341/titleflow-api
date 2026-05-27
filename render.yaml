@@ -8,7 +8,7 @@ services:
     runtime: python
     plan: free               # Change to "starter" ($7/mo) for always-on
     buildCommand: pip install -r requirements.txt
-    startCommand: python migrate_add_agent_profile_columns.py && python seed_hubcity.py && uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: python migrate_fee_settings.py && python migrate_add_agent_profile_columns.py && python seed_hubcity.py && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:

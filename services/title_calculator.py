@@ -1,8 +1,11 @@
 """
-services/title_calculator.py  v2.2.0
+services/title_calculator.py  v2.3.0
 Locked template — JARVIS title_company gig.
 CORE BUSINESS LOGIC — 11 calculators, all Decimal math.
 
+v2.3.0: Wire calculator to read fees from company.fee_settings (admin-configurable).
+  seller_net_sheet + buyer_estimate now load fees from DB, fall back to hardcoded defaults.
+  TDI 2025 premium table stays hardcoded (state law).
 v2.2.0: TDI 2025 Basic Premium Rates (Commissioner's Order 2025-9125, effective July 1, 2025).
   Hardcoded 151-row lookup table + 7-tier excess formula replaces database bracket lookup.
   10% reduction from prior rates.
@@ -17,6 +20,7 @@ Calculators: seller_net_sheet, buyer_estimate, sell_vs_rent, holding_cost,
   buydown, truvalue, buyer_compensation, buy_now_vs_later, price_vs_rate,
   extra_payment, scenario_compare
 """
+import json
 import logging
 from datetime import date as _date_type
 from decimal import Decimal
@@ -42,6 +46,7 @@ from schemas.calculator import (
     TruValueInput, TruValueResult, TruValueScenario,
 )
 from services.rate_table_service import RateTableService
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
@@ -162,6 +167,38 @@ class CalculatorError(Exception):
     pass
 
 
+# ── Fee settings loader — reads company.fee_settings, merges with defaults ──
+_FEE_DEFAULTS = {
+    "deed_prep_fee": 150.00,
+    "release_prep_fee": 50.00,
+    "tax_cert_fee": 10.00,
+    "e_recording_fee_seller": 19.35,
+    "e_recording_fee_buyer": 6.45,
+    "guaranty_fee": 2.00,
+    "default_per_diem_rate_pct": 6.5,
+    "appraisal_fee": 550.00,
+    "credit_report_fee": 35.00,
+    "flood_cert_fee": 20.00,
+}
+
+
+def _load_fee_settings(db: Session) -> dict:
+    """Load fee_settings from company singleton, merged with hardcoded defaults.
+    Returns dict with float values for each fee key.
+    """
+    merged = dict(_FEE_DEFAULTS)
+    try:
+        from models.company import Company
+        row = db.execute(select(Company).limit(1)).scalars().first()
+        if row and row.fee_settings:
+            stored = json.loads(row.fee_settings) if isinstance(row.fee_settings, str) else row.fee_settings
+            if isinstance(stored, dict):
+                merged.update(stored)
+    except Exception as e:
+        logger.debug("Could not load fee_settings, using defaults: %s", e)
+    return merged
+
+
 class TitleCalculatorService:
 
     def __init__(self, rate_table_service: Optional[RateTableService] = None):
@@ -186,6 +223,15 @@ class TitleCalculatorService:
     def seller_net_sheet(self, data: SellerNetSheetInput, db: Session = None) -> SellerNetSheetResult:
         db = db if db is not None else getattr(self, "_db", None)
         try:
+            # Load admin-configurable fees (falls back to hardcoded defaults)
+            fees = _load_fee_settings(db)
+            fee_deed_prep = _to_decimal(fees.get("deed_prep_fee", 150.00))
+            fee_release_prep = _to_decimal(fees.get("release_prep_fee", 50.00))
+            fee_tax_cert = _to_decimal(fees.get("tax_cert_fee", 10.00))
+            fee_e_recording = _to_decimal(fees.get("e_recording_fee_seller", 19.35))
+            fee_guaranty = _to_decimal(fees.get("guaranty_fee", 2.00))
+            fee_per_diem_default = _to_decimal(fees.get("default_per_diem_rate_pct", 6.5)) / Decimal("100")
+
             county = self._get_county(data.county_id, db)
             rate = self._rate(db)
             sale_price = _to_decimal(data.sale_price)
@@ -201,17 +247,17 @@ class TitleCalculatorService:
                 owner_title_base = _tdi_2025_premium(sale_price)
             owner_title_premium = owner_title_base
 
-            # Doc prep: $150 for deed + $50 for release if there's a payoff
-            seller_doc_prep = DEED_PREP_FEE
+            # Doc prep: deed + release if there's a payoff (fees from settings)
+            seller_doc_prep = fee_deed_prep
             if loan_balance > ZERO:
-                seller_doc_prep = seller_doc_prep + RELEASE_PREP_FEE
+                seller_doc_prep = seller_doc_prep + fee_release_prep
 
             closing_fee = _to_decimal(county.closing_fee_flat) / Decimal("2")
             recording_fee = _to_decimal(county.recording_fee_flat)
             transfer_tax = sale_price * _to_decimal(county.transfer_tax_rate_pct) / Decimal("100")
             survey_fee = _to_decimal(county.survey_fee_flat) if data.include_survey else ZERO
             home_warranty = _to_decimal(data.home_warranty_amount) if data.include_home_warranty else ZERO
-            per_diem_rate = _to_decimal(data.loan_payoff_per_diem_rate) if data.loan_payoff_per_diem_rate is not None else DEFAULT_PER_DIEM_INTEREST_RATE
+            per_diem_rate = _to_decimal(data.loan_payoff_per_diem_rate) if data.loan_payoff_per_diem_rate is not None else fee_per_diem_default
             per_diem_interest = (loan_balance * per_diem_rate / Decimal("365")) * Decimal("30")
             hoa_payoff = _to_decimal(data.hoa_payoff)
             seller_concessions = _to_decimal(data.seller_concessions)
@@ -232,8 +278,8 @@ class TitleCalculatorService:
             total_seller_costs = (
                 total_commission + owner_title_premium + closing_fee + recording_fee
                 + transfer_tax + survey_fee + home_warranty + per_diem_interest
-                + seller_doc_prep + TAX_CERT_FEE + E_RECORDING_FEE
-                + TX_POLICY_GUARANTY_FEE + tax_proration + hoa_payoff
+                + seller_doc_prep + fee_tax_cert + fee_e_recording
+                + fee_guaranty + tax_proration + hoa_payoff
                 + seller_concessions + miscellaneous
             )
             net_proceeds = sale_price - loan_balance - total_seller_costs
@@ -248,9 +294,9 @@ class TitleCalculatorService:
                 LineItem(label="Deed Prep" + (" + Release" if loan_balance > ZERO else ""), amount=_round_cents(seller_doc_prep), category="title"),
                 LineItem(label="Recording Fee", amount=_round_cents(recording_fee), category="government"),
                 LineItem(label="Transfer Tax", amount=_round_cents(transfer_tax), category="government"),
-                LineItem(label="Tax Certificates", amount=_round_cents(TAX_CERT_FEE), category="government"),
-                LineItem(label="E-Recording Fee", amount=_round_cents(E_RECORDING_FEE), category="government"),
-                LineItem(label="TX Policy Guaranty Fee", amount=_round_cents(TX_POLICY_GUARANTY_FEE), category="title"),
+                LineItem(label="Tax Certificates", amount=_round_cents(fee_tax_cert), category="government"),
+                LineItem(label="E-Recording Fee", amount=_round_cents(fee_e_recording), category="government"),
+                LineItem(label="TX Policy Guaranty Fee", amount=_round_cents(fee_guaranty), category="title"),
             ])
             if tax_proration > ZERO:
                 line_items.append(LineItem(label="Property Tax Proration", amount=_round_cents(tax_proration), category="government", note=proration_note))
@@ -298,6 +344,11 @@ class TitleCalculatorService:
     def buyer_estimate(self, data: BuyerEstimateInput, db: Session = None) -> BuyerEstimateResult:
         db = db if db is not None else getattr(self, "_db", None)
         try:
+            # Load admin-configurable fees (falls back to hardcoded defaults)
+            fees = _load_fee_settings(db)
+            fee_tax_cert = _to_decimal(fees.get("tax_cert_fee", 10.00))
+            fee_e_recording_buyer = _to_decimal(fees.get("e_recording_fee_buyer", 6.45))
+
             county = self._get_county(data.county_id, db)
             rate = self._rate(db)
             pp = _to_decimal(data.purchase_price)
@@ -353,7 +404,7 @@ class TitleCalculatorService:
             tcc = (ltp + cf + rf
                    + t19 + survey_cover + t17 + t36 + t30
                    + misc_lender + af + cr + fha + va
-                   + TAX_CERT_FEE + E_RECORDING_FEE_BUYER)
+                   + fee_tax_cert + fee_e_recording_buyer)
 
             # Cash to close = down + closing + prepaids + inspections - seller credit
             ctc = dp + tcc + pi + pins + tesc + survey + pest + home_insp - sc
@@ -415,8 +466,8 @@ class TitleCalculatorService:
             # Government
             items.extend([
                 LineItem(label="Recording Fee", amount=_round_cents(rf), category="government"),
-                LineItem(label="Tax Certificates", amount=_round_cents(TAX_CERT_FEE), category="government"),
-                LineItem(label="E-Recording Fee", amount=_round_cents(E_RECORDING_FEE_BUYER), category="government"),
+                LineItem(label="Tax Certificates", amount=_round_cents(fee_tax_cert), category="government"),
+                LineItem(label="E-Recording Fee", amount=_round_cents(fee_e_recording_buyer), category="government"),
             ])
 
             if sc > ZERO:

@@ -187,18 +187,9 @@ class PdfGenerator:
                 ) if right_lines else None
 
                 if headshot_img and agent_text:
-                    # Side by side: headshot | text
-                    agent_row = Table(
-                        [[headshot_img, agent_text]],
-                        colWidths=[1.0 * inch, 2.2 * inch],
-                    )
-                    agent_row.setStyle(TableStyle([
-                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                        ("ALIGN", (1, 0), (1, 0), "RIGHT"),
-                        ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-                    ]))
-                    agent_elements.append(agent_row)
+                    # Headshot on top, text below, all right-aligned
+                    agent_elements.append(headshot_img)
+                    agent_elements.append(agent_text)
                 elif agent_text:
                     agent_elements.append(agent_text)
                 elif headshot_img:
@@ -206,7 +197,7 @@ class PdfGenerator:
 
             # Build header as a table: left = company, right = agent
             # Stack elements vertically in each cell using nested Table
-            def _stack(elements: List[Any]) -> Any:
+            def _stack(elements, align="LEFT"):
                 if not elements:
                     return Paragraph("&nbsp;", normal)
                 if len(elements) == 1:
@@ -215,6 +206,7 @@ class PdfGenerator:
                 t = Table(rows, colWidths=[3.4 * inch])
                 t.setStyle(TableStyle([
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("ALIGN", (0, 0), (-1, -1), align),
                     ("LEFTPADDING", (0, 0), (-1, -1), 0),
                     ("RIGHTPADDING", (0, 0), (-1, -1), 0),
                     ("TOPPADDING", (0, 0), (-1, -1), 2),
@@ -223,7 +215,7 @@ class PdfGenerator:
                 return t
 
             header_tbl = Table(
-                [[_stack(left_block), _stack(agent_elements)]],
+                [[_stack(left_block), _stack(agent_elements, "RIGHT")]],
                 colWidths=[3.8 * inch, 3.4 * inch],
             )
             header_tbl.setStyle(TableStyle([

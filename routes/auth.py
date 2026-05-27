@@ -255,3 +255,36 @@ def deactivate_agent(
     except Exception as exc:
         logger.error(f"[AUTH] deactivate_agent failed: {exc}")
         raise HTTPException(status_code=500, detail="Deactivation failed")
+
+
+@router.post("/agents/create", status_code=status.HTTP_201_CREATED)
+def admin_create_agent(
+    user_data: UserCreate,
+    current_user=Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Admin: manually create an agent account (active immediately, no approval needed)."""
+    try:
+        normalized_email = user_data.email.lower().strip()
+        existing = db.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
+        if existing is not None:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        new_user = User(
+            email=normalized_email,
+            hashed_password=get_password_hash(user_data.password),
+            full_name=user_data.full_name,
+            phone=getattr(user_data, 'phone', None),
+            brokerage_name=getattr(user_data, 'brokerage_name', None),
+            role="agent",
+            is_active=True,
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        logger.info(f"[AUTH] Agent {new_user.id} created by admin {current_user.id}")
+        return new_user.to_profile_dict()
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"[AUTH] admin_create_agent failed: {exc}")
+        raise HTTPException(status_code=500, detail="Failed to create agent")

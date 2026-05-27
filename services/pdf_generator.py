@@ -317,17 +317,35 @@ class PdfGenerator:
                     sig_tmp.write(sig_bytes)
                     sig_tmp.close()
 
-                    story.append(Paragraph("Client Signature", subheading))
-                    story.append(Image(sig_tmp.name, width=2.0 * inch, height=0.6 * inch))
+                    # Signature block with line and X
+                    sig_img = Image(sig_tmp.name, width=2.0 * inch, height=0.6 * inch)
+                    sig_line_data = [
+                        [sig_img, ''],
+                        ['X _______________________________', ''],
+                    ]
+                    sig_tbl = Table(sig_line_data, colWidths=[3.5 * inch, 3.5 * inch])
+                    sig_tbl.setStyle(TableStyle([
+                        ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
+                        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                        ('TOPPADDING', (0, 0), (-1, -1), 0),
+                        ('BOTTOMPADDING', (0, 0), (0, 0), 0),
+                        ('BOTTOMPADDING', (0, 1), (0, 1), 2),
+                        ('FONTNAME', (0, 1), (0, 1), 'Helvetica'),
+                        ('FONTSIZE', (0, 1), (0, 1), 10),
+                    ]))
+                    story.append(sig_tbl)
                     signed_at = sheet.get("signed_at")
                     if signed_at:
                         sig_date = str(signed_at)[:19] if len(str(signed_at)) > 19 else str(signed_at)
-                        story.append(Paragraph(f"Signed: {sig_date}", small))
-                    if sheet.get("client_name"):
-                        story.append(Paragraph(f"Signer: {sheet['client_name']}", small))
+                        story.append(Paragraph(f"Signed: {sig_date} | Signer: {sheet.get('client_name', '')}", small))
                     story.append(Spacer(1, 6))
                 except Exception as sig_err:
                     logger.debug("Could not render signature: %s", sig_err)
+            else:
+                # Unsigned: show empty signature line
+                story.append(Spacer(1, 20))
+                story.append(Paragraph("X _______________________________", normal))
+                story.append(Paragraph("Client Signature", small))
 
             # ── FOOTER ──
             disclaimer = company.get("disclaimer_text") \

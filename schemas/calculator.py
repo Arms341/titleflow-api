@@ -1,8 +1,10 @@
 """
-schemas/calculator.py  v2.0.0
+schemas/calculator.py  v2.1.0
 Locked template — JARVIS title_company gig.
 Input/output schemas for all 11 calculator endpoints.
 
+v2.1.0: Seller home_warranty_amount (keyed-in, default $700). Buyer escrow_fee
+  and doc_prep_buyer defaults zeroed (not charged on buyer side per Lee).
 v2.0.0: Added TruValue, BuyerCompensation, BuyNowVsLater, PriceVsRate,
   ExtraPayment, ScenarioCompare schemas. Added annual_property_taxes +
   tax_proration to seller net sheet. 11 calculators total.
@@ -42,6 +44,7 @@ class SellerNetSheetInput(BaseModel):
     hoa_payoff: Decimal = Decimal("0")
     seller_concessions: Decimal = Decimal("0")
     include_home_warranty: bool = True
+    home_warranty_amount: Decimal = Decimal("700")
     include_survey: bool = False
     loan_payoff_per_diem_rate: Optional[Decimal] = None
     miscellaneous_fees: Decimal = Decimal("0")
@@ -92,8 +95,8 @@ class BuyerEstimateInput(BaseModel):
     pest_inspection_fee: Decimal = Decimal("100")
     home_inspection_fee: Decimal = Decimal("400")
     # Title endorsements
-    escrow_fee: Decimal = Decimal("250")
-    doc_prep_buyer: Decimal = Decimal("225")
+    escrow_fee: Decimal = Decimal("0")
+    doc_prep_buyer: Decimal = Decimal("0")
     t19_endorsement: Decimal = Decimal("80.99")
     survey_cover_endorsement: Decimal = Decimal("99.15")
     t17_endorsement: Decimal = Decimal("25")

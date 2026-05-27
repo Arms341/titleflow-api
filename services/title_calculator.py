@@ -144,7 +144,7 @@ class TitleCalculatorService:
             recording_fee = _to_decimal(county.recording_fee_flat)
             transfer_tax = sale_price * _to_decimal(county.transfer_tax_rate_pct) / Decimal("100")
             survey_fee = _to_decimal(county.survey_fee_flat) if data.include_survey else ZERO
-            home_warranty = _to_decimal(county.home_warranty_flat) if data.include_home_warranty else ZERO
+            home_warranty = _to_decimal(data.home_warranty_amount) if data.include_home_warranty else ZERO
             per_diem_rate = _to_decimal(data.loan_payoff_per_diem_rate) if data.loan_payoff_per_diem_rate is not None else DEFAULT_PER_DIEM_INTEREST_RATE
             per_diem_interest = (loan_balance * per_diem_rate / Decimal("365")) * Decimal("30")
             hoa_payoff = _to_decimal(data.hoa_payoff)
@@ -284,10 +284,10 @@ class TitleCalculatorService:
             tesc = (at / Decimal("12")) * Decimal(mt)
 
             # Total closing costs (fixed fees + title + endorsements + lender)
-            tcc = (ltp + cf + rf + escrow_fee + doc_prep
+            tcc = (ltp + cf + rf
                    + t19 + survey_cover + t17 + t36 + t30
                    + misc_lender + af + cr + fha + va
-                   + TITLE_SEARCH_FEE + TAX_CERT_FEE + E_RECORDING_FEE_BUYER)
+                   + TAX_CERT_FEE + E_RECORDING_FEE_BUYER)
 
             # Cash to close = down + closing + prepaids + inspections - seller credit
             ctc = dp + tcc + pi + pins + tesc + survey + pest + home_insp - sc
@@ -315,7 +315,6 @@ class TitleCalculatorService:
             # Title fees
             items.extend([
                 LineItem(label="Lender's Title Policy", amount=_round_cents(ltp), category="title"),
-                LineItem(label="Escrow Fee", amount=_round_cents(escrow_fee), category="title"),
             ])
             if t19 > ZERO:
                 items.append(LineItem(label="T-19 Endorsement", amount=_round_cents(t19), category="title"))
@@ -327,7 +326,6 @@ class TitleCalculatorService:
                 items.append(LineItem(label="Mortgagee's T-36 Endorsement", amount=_round_cents(t36), category="title"))
             if t30 > ZERO:
                 items.append(LineItem(label="Mortgagee's T-30 Endorsement", amount=_round_cents(t30), category="title"))
-            items.append(LineItem(label="Doc Prep", amount=_round_cents(doc_prep), category="title"))
 
             # Lender fees
             if not is_cash:

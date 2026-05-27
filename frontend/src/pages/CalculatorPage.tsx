@@ -339,7 +339,7 @@ function ResultPanel({ result, title }: { result: any; title: string }) {
 function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () => void; prefill?: any }) {
   const { data: taxDistricts } = useQuery({ queryKey: ['tax-districts'], queryFn: () => api.get('/tax_districts/').then(r => r.data) });
   const districts = taxDistricts || [];
-  const defaults = { sale_price: '350000', existing_loan_balance: '150000', seller_agent_commission_pct: '3.0', buyer_agent_commission_pct: '3.0', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', prior_title_insurance: false, years_since_prior_policy: '0', hoa_payoff: '0', seller_concessions: '0', include_home_warranty: true, include_survey: false, miscellaneous_fees: '0', annual_property_taxes: '0', property_address: '', client_name: '', tax_district_id: '' };
+  const defaults = { sale_price: '350000', existing_loan_balance: '150000', seller_agent_commission_pct: '3.0', buyer_agent_commission_pct: '3.0', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', prior_title_insurance: false, years_since_prior_policy: '0', hoa_payoff: '0', seller_concessions: '0', include_home_warranty: true, include_survey: false, miscellaneous_fees: '0', annual_property_taxes: '0', property_address: '', client_name: '', tax_district_id: '', home_warranty_amount: '700' };
   const [f, sF] = useState(prefill ? { ...defaults, ...Object.fromEntries(Object.entries(prefill).filter(([_, v]) => v !== null && v !== undefined).map(([k, v]) => [k, String(v)])), prior_title_insurance: prefill.prior_title_insurance ?? false, include_home_warranty: prefill.include_home_warranty ?? true, include_survey: prefill.include_survey ?? false } : defaults);
   const [result, setResult] = useState<any>(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
   const s = (k: string, v: any) => {
@@ -357,7 +357,7 @@ function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: ()
     }
     sF(next);
   };
-  const calc = async () => { setLoading(true); setError(''); try { const res = await api.post('/calculators/seller-net-sheet', { ...f, sale_price: parseFloat(f.sale_price), existing_loan_balance: parseFloat(f.existing_loan_balance), seller_agent_commission_pct: parseFloat(f.seller_agent_commission_pct), buyer_agent_commission_pct: parseFloat(f.buyer_agent_commission_pct), county_id: parseInt(f.county_id), hoa_payoff: parseFloat(f.hoa_payoff), seller_concessions: parseFloat(f.seller_concessions), miscellaneous_fees: parseFloat(f.miscellaneous_fees), annual_property_taxes: parseFloat(f.annual_property_taxes), years_since_prior_policy: f.prior_title_insurance ? parseInt(f.years_since_prior_policy) : null }); setResult(res.data); } catch (e: any) { setError(e.response?.data?.detail || 'Calculation failed'); } setLoading(false); };
+  const calc = async () => { setLoading(true); setError(''); try { const res = await api.post('/calculators/seller-net-sheet', { ...f, sale_price: parseFloat(f.sale_price), existing_loan_balance: parseFloat(f.existing_loan_balance), seller_agent_commission_pct: parseFloat(f.seller_agent_commission_pct), buyer_agent_commission_pct: parseFloat(f.buyer_agent_commission_pct), county_id: parseInt(f.county_id), hoa_payoff: parseFloat(f.hoa_payoff), seller_concessions: parseFloat(f.seller_concessions), miscellaneous_fees: parseFloat(f.miscellaneous_fees), annual_property_taxes: parseFloat(f.annual_property_taxes), home_warranty_amount: parseFloat(f.home_warranty_amount), years_since_prior_policy: f.prior_title_insurance ? parseInt(f.years_since_prior_policy) : null }); setResult(res.data); } catch (e: any) { setError(e.response?.data?.detail || 'Calculation failed'); } setLoading(false); };
   return (
     <div className="mt-4"><Header icon="🏠" name="Seller Net Sheet" desc="Calculate estimated net proceeds for seller" onBack={onBack} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -389,8 +389,8 @@ function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: ()
           </Field>
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.include_home_warranty} onChange={e => s('include_home_warranty', e.target.checked)} /> Include Home Warranty</label>
+            {f.include_home_warranty && <Field label="Home Warranty Amount"><Inp value={f.home_warranty_amount} onChange={(v: string) => s('home_warranty_amount', v)} prefix="$" /></Field>}
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.include_survey} onChange={e => s('include_survey', e.target.checked)} /> Include Survey</label>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.prior_title_insurance} onChange={e => s('prior_title_insurance', e.target.checked)} /> Prior Title Insurance (Reissue Rate)</label>
           </div>
           <Section title="Other Costs" />
           <div className="grid grid-cols-2 gap-3"><Field label="HOA Payoff"><Inp value={f.hoa_payoff} onChange={(v: string) => s('hoa_payoff', v)} prefix="$" /></Field><Field label="Seller Concessions"><Inp value={f.seller_concessions} onChange={(v: string) => s('seller_concessions', v)} prefix="$" /></Field></div>
@@ -470,8 +470,6 @@ function BuyerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () 
           </div>
           <Section title="Title Endorsements" />
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Escrow Fee"><Inp value={f.escrow_fee} onChange={(v: string) => s('escrow_fee', v)} prefix="$" /></Field>
-            <Field label="Doc Prep"><Inp value={f.doc_prep_buyer} onChange={(v: string) => s('doc_prep_buyer', v)} prefix="$" /></Field>
             <Field label="T-19 Endorsement"><Inp value={f.t19_endorsement} onChange={(v: string) => s('t19_endorsement', v)} prefix="$" /></Field>
             <Field label="Survey Cover"><Inp value={f.survey_cover_endorsement} onChange={(v: string) => s('survey_cover_endorsement', v)} prefix="$" /></Field>
             <Field label="T-17 Mortgagee's"><Inp value={f.t17_endorsement} onChange={(v: string) => s('t17_endorsement', v)} prefix="$" /></Field>

@@ -338,12 +338,15 @@ function ResultPanel({ result, title }: { result: any; title: string }) {
 // ── 1. SELLER NET SHEET ──
 function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () => void; prefill?: any }) {
   const { data: taxDistricts } = useQuery({ queryKey: ['tax-districts'], queryFn: () => api.get('/tax_districts/').then(r => r.data) });
-  const districts = taxDistricts || [];
+  const allDistricts = taxDistricts || [];
   const defaults = { sale_price: '350000', existing_loan_balance: '150000', seller_agent_commission_pct: '3.0', buyer_agent_commission_pct: '3.0', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', prior_title_insurance: false, years_since_prior_policy: '0', hoa_payoff: '0', seller_concessions: '0', include_home_warranty: true, include_survey: false, miscellaneous_fees: '0', annual_property_taxes: '0', property_address: '', client_name: '', tax_district_id: '', home_warranty_amount: '700' };
   const [f, sF] = useState(prefill ? { ...defaults, ...Object.fromEntries(Object.entries(prefill).filter(([_, v]) => v !== null && v !== undefined).map(([k, v]) => [k, String(v)])), prior_title_insurance: prefill.prior_title_insurance ?? false, include_home_warranty: prefill.include_home_warranty ?? true, include_survey: prefill.include_survey ?? false } : defaults);
   const [result, setResult] = useState<any>(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
+  const districts = allDistricts.filter((d: any) => d.county_id?.toString() === f.county_id?.toString());
   const s = (k: string, v: any) => {
     const next = { ...f, [k]: v };
+    // Reset tax district when county changes
+    if (k === 'county_id') { next.tax_district_id = ''; next.annual_property_taxes = '0'; }
     // Auto-calc taxes when district or sale price changes
     if (k === 'tax_district_id' || k === 'sale_price') {
       const distId = k === 'tax_district_id' ? v : next.tax_district_id;
@@ -406,12 +409,14 @@ function SellerForm({ counties, onBack, prefill }: { counties: any[]; onBack: ()
 // ── 2. BUYER ESTIMATE ──
 function BuyerForm({ counties, onBack, prefill }: { counties: any[]; onBack: () => void; prefill?: any }) {
   const { data: taxDistricts } = useQuery({ queryKey: ['tax-districts'], queryFn: () => api.get('/tax_districts/').then(r => r.data) });
-  const districts = taxDistricts || [];
+  const allDistricts = taxDistricts || [];
   const defaults = { purchase_price: '350000', loan_amount: '280000', loan_type: 'conventional', interest_rate: '6.75', county_id: counties[0]?.id?.toString() || '1', closing_date: '2026-07-15', annual_property_taxes: '0', annual_homeowners_insurance: '2850', months_insurance_prepaid: '14', months_tax_escrow: '4', seller_paid_closing_costs: '0', property_address: '', client_name: '', tax_district_id: '', misc_lender_fees: '1100', appraisal_fee: '450', credit_report_fee: '40', survey_fee: '500', pest_inspection_fee: '100', home_inspection_fee: '400', escrow_fee: '250', doc_prep_buyer: '225', t19_endorsement: '80.99', survey_cover_endorsement: '99.15', t17_endorsement: '25', t36_endorsement: '25', t30_endorsement: '25' };
   const [f, sF] = useState(prefill ? { ...defaults, ...Object.fromEntries(Object.entries(prefill).filter(([_, v]) => v !== null && v !== undefined).map(([k, v]) => [k, String(v)])) } : defaults);
   const [result, setResult] = useState<any>(null); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
+  const districts = allDistricts.filter((d: any) => d.county_id?.toString() === f.county_id?.toString());
   const s = (k: string, v: any) => {
     const next = { ...f, [k]: v };
+    if (k === 'county_id') { next.tax_district_id = ''; next.annual_property_taxes = '0'; }
     if (k === 'tax_district_id' || k === 'purchase_price') {
       const distId = k === 'tax_district_id' ? v : next.tax_district_id;
       const price = k === 'purchase_price' ? parseFloat(v) : parseFloat(next.purchase_price);

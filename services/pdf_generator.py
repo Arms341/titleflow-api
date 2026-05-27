@@ -1,6 +1,7 @@
 """
-services/pdf_generator.py  v2.1.0
+services/pdf_generator.py  v2.2.0
 Dual-branded PDF — title company logo + agent headshot.
+v2.2.0: Compact single-page layout. Signature inline after totals.
 v2.1.0: Render client signature (base64 PNG) on PDF if present.
 v2.0.0: Added company logo image, agent headshot image, dual-brand header.
         Fetch remote images via urllib, render with reportlab Image.
@@ -97,10 +98,10 @@ class PdfGenerator:
             doc = SimpleDocTemplate(
                 buffer,
                 pagesize=LETTER,
-                leftMargin=0.6 * inch,
-                rightMargin=0.6 * inch,
-                topMargin=0.5 * inch,
-                bottomMargin=0.5 * inch,
+                leftMargin=0.5 * inch,
+                rightMargin=0.5 * inch,
+                topMargin=0.4 * inch,
+                bottomMargin=0.4 * inch,
             )
             brand_primary = _hex_to_rl_color(company.get("primary_color"))
             brand_secondary = _hex_to_rl_color(company.get("secondary_color"), fallback="#f59e0b")
@@ -109,17 +110,17 @@ class PdfGenerator:
             styles = getSampleStyleSheet()
             heading = ParagraphStyle(
                 "heading", parent=styles["Heading1"],
-                textColor=brand_primary, spaceAfter=6,
+                textColor=brand_primary, spaceAfter=4, fontSize=16,
             )
             subheading = ParagraphStyle(
                 "subheading", parent=styles["Heading3"],
-                textColor=brand_primary, spaceAfter=4,
+                textColor=brand_primary, spaceAfter=2, fontSize=10,
             )
             normal = styles["Normal"]
-            small = ParagraphStyle("small", parent=normal, fontSize=8, textColor=colors.grey)
+            small = ParagraphStyle("small", parent=normal, fontSize=7, textColor=colors.grey)
             big_total = ParagraphStyle(
                 "big_total", parent=styles["Heading1"],
-                alignment=2, textColor=brand_primary, fontSize=20,
+                alignment=2, textColor=brand_primary, fontSize=16,
             )
 
             # ── HEADER — Company (left) + Agent (right) ──
@@ -198,7 +199,7 @@ class PdfGenerator:
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
             ]))
             story.append(header_tbl)
-            story.append(Spacer(1, 8))
+            story.append(Spacer(1, 4))
 
             # ── SHEET TITLE ──
             sheet_type = sheet.get("sheet_type", "seller")
@@ -224,7 +225,7 @@ class PdfGenerator:
                 prop_lines.append(f"<b>County:</b> {county_name}")
             if prop_lines:
                 story.append(Paragraph("<br/>".join(prop_lines), normal))
-                story.append(Spacer(1, 8))
+                story.append(Spacer(1, 4))
 
             # ── LINE ITEMS ──
             output = sheet.get("output_data") or {}
@@ -237,17 +238,20 @@ class PdfGenerator:
                 amount = li.get("amount")
                 rows.append([label, _fmt_money(amount)])
 
-            items_tbl = Table(rows, colWidths=[4.8 * inch, 2.0 * inch])
+            items_tbl = Table(rows, colWidths=[5.0 * inch, 2.0 * inch])
             items_tbl.setStyle(TableStyle([
                 ("BACKGROUND", (0, 0), (-1, 0), brand_primary),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                 ("ALIGN", (1, 0), (1, -1), "RIGHT"),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 9),
                 ("GRID", (0, 0), (-1, -1), 0.25, colors.lightgrey),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
             ]))
             story.append(items_tbl)
-            story.append(Spacer(1, 10))
+            story.append(Spacer(1, 6))
 
             # ── REISSUE CALLOUT ──
             reissue = output.get("reissue_savings")
@@ -283,21 +287,22 @@ class PdfGenerator:
 
             totals_rows = [[label, _fmt_money(val)] for label, val in totals]
             totals_rows.append([big_label, _fmt_money(big_value)])
-            totals_tbl = Table(totals_rows, colWidths=[4.8 * inch, 2.0 * inch])
+            totals_tbl = Table(totals_rows, colWidths=[5.0 * inch, 2.0 * inch])
             totals_tbl.setStyle(TableStyle([
                 ("ALIGN", (1, 0), (1, -1), "RIGHT"),
                 ("LINEABOVE", (0, -1), (-1, -1), 1.5, brand_primary),
+                ("FONTSIZE", (0, 0), (-1, -2), 10),
                 ("FONTSIZE", (0, -1), (-1, -1), 13),
                 ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
                 ("TEXTCOLOR", (0, -1), (-1, -1), brand_primary),
-                ("TOPPADDING", (0, -1), (-1, -1), 6),
+                ("TOPPADDING", (0, -1), (-1, -1), 4),
             ]))
             story.append(totals_tbl)
-            story.append(Spacer(1, 12))
+            story.append(Spacer(1, 6))
 
             # ── BIG NET PROCEEDS ──
             story.append(Paragraph(_fmt_money(big_value), big_total))
-            story.append(Spacer(1, 16))
+            story.append(Spacer(1, 8))
 
             # ── CLIENT SIGNATURE ──
             client_sig = sheet.get("client_signature")
@@ -313,14 +318,14 @@ class PdfGenerator:
                     sig_tmp.close()
 
                     story.append(Paragraph("Client Signature", subheading))
-                    story.append(Image(sig_tmp.name, width=2.5 * inch, height=0.8 * inch))
+                    story.append(Image(sig_tmp.name, width=2.0 * inch, height=0.6 * inch))
                     signed_at = sheet.get("signed_at")
                     if signed_at:
                         sig_date = str(signed_at)[:19] if len(str(signed_at)) > 19 else str(signed_at)
                         story.append(Paragraph(f"Signed: {sig_date}", small))
                     if sheet.get("client_name"):
                         story.append(Paragraph(f"Signer: {sheet['client_name']}", small))
-                    story.append(Spacer(1, 12))
+                    story.append(Spacer(1, 6))
                 except Exception as sig_err:
                     logger.debug("Could not render signature: %s", sig_err)
 

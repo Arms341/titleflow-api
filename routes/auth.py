@@ -1,9 +1,10 @@
-"""routes/auth.py — canonical locked template v1.5.0
+"""routes/auth.py — canonical locked template v1.6.0
 
 Mounts at prefix="/auth" via main.py include_router.
 Endpoints: POST /auth/login, POST /auth/register, POST /auth/token,
            GET /auth/me, PUT /auth/profile, GET /auth/agents, PUT /auth/agents/{id}/approve
 
+v1.6.0: Email case-insensitive — all login/token/register normalize to .lower().strip().
 v1.5.0: Added PUT /profile for agent self-service profile edits.
   Added full profile response on /me (to_profile_dict).
   Added GET /agents (admin list all agents) + PUT /agents/{id}/approve.
@@ -36,7 +37,8 @@ router = APIRouter()
 def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     """Authenticate user and return JWT access token."""
     try:
-        result = db.execute(select(User).where(User.email == form_data.username))
+        email_normalized = form_data.username.lower().strip()
+        result = db.execute(select(User).where(User.email == email_normalized))
         user = result.scalar_one_or_none()
         if user is None or not user.check_password(form_data.password):
             raise HTTPException(
@@ -60,7 +62,8 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 def token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     """OAuth2-compatible token endpoint (alias for /login)."""
     try:
-        result = db.execute(select(User).where(User.email == form_data.username))
+        email_normalized = form_data.username.lower().strip()
+        result = db.execute(select(User).where(User.email == email_normalized))
         user = result.scalar_one_or_none()
         if user is None or not user.check_password(form_data.password):
             raise HTTPException(
@@ -84,14 +87,15 @@ def token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """Register a new user account."""
     try:
-        existing = db.execute(select(User).where(User.email == user_data.email)).scalar_one_or_none()
+        normalized_email = user_data.email.lower().strip()
+        existing = db.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
         if existing is not None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered",
             )
         new_user = User(
-            email=user_data.email.lower().strip(),
+            email=normalized_email,
             hashed_password=get_password_hash(user_data.password),
             full_name=user_data.full_name,
             phone=user_data.phone,

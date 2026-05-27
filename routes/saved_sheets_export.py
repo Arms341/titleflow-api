@@ -1,6 +1,7 @@
 """
-routes/saved_sheets_export.py  v1.1.0
+routes/saved_sheets_export.py  v1.2.0
 PDF export with agent branding (dual branding — title company + agent headshot).
+v1.2.0: Pass client_signature + signed_at to PDF generator for rendering on PDF.
 v1.1.0: Look up agent from saved_sheet.agent_id, pass to PDF generator.
 """
 import logging
@@ -58,6 +59,8 @@ def download_saved_sheet_pdf(
             "client_name": sheet.client_name,
             "input_data": sheet.input_data,
             "output_data": sheet.output_data,
+            "client_signature": getattr(sheet, "client_signature", None),
+            "signed_at": getattr(sheet, "signed_at", None),
         }
         company_dict: Dict[str, Any] = {
             "company_name": company_row.company_name,

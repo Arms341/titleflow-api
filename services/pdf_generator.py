@@ -1,10 +1,12 @@
 """
-services/pdf_generator.py  v2.0.0
+services/pdf_generator.py  v2.1.0
 Dual-branded PDF — title company logo + agent headshot.
+v2.1.0: Render client signature (base64 PNG) on PDF if present.
 v2.0.0: Added company logo image, agent headshot image, dual-brand header.
         Fetch remote images via urllib, render with reportlab Image.
 v1.0.0: Initial text-only branded PDF.
 """
+import base64
 import io
 import logging
 import tempfile
@@ -296,6 +298,31 @@ class PdfGenerator:
             # ── BIG NET PROCEEDS ──
             story.append(Paragraph(_fmt_money(big_value), big_total))
             story.append(Spacer(1, 16))
+
+            # ── CLIENT SIGNATURE ──
+            client_sig = sheet.get("client_signature")
+            if client_sig:
+                try:
+                    # Strip data URL prefix if present
+                    sig_data = client_sig
+                    if "," in sig_data:
+                        sig_data = sig_data.split(",", 1)[1]
+                    sig_bytes = base64.b64decode(sig_data)
+                    sig_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+                    sig_tmp.write(sig_bytes)
+                    sig_tmp.close()
+
+                    story.append(Paragraph("Client Signature", subheading))
+                    story.append(Image(sig_tmp.name, width=2.5 * inch, height=0.8 * inch))
+                    signed_at = sheet.get("signed_at")
+                    if signed_at:
+                        sig_date = str(signed_at)[:19] if len(str(signed_at)) > 19 else str(signed_at)
+                        story.append(Paragraph(f"Signed: {sig_date}", small))
+                    if sheet.get("client_name"):
+                        story.append(Paragraph(f"Signer: {sheet['client_name']}", small))
+                    story.append(Spacer(1, 12))
+                except Exception as sig_err:
+                    logger.debug("Could not render signature: %s", sig_err)
 
             # ── FOOTER ──
             disclaimer = company.get("disclaimer_text") \

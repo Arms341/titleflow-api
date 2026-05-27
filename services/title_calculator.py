@@ -1,8 +1,12 @@
 """
-services/title_calculator.py  v2.0.0
+services/title_calculator.py  v2.1.0
 Locked template — JARVIS title_company gig.
 CORE BUSINESS LOGIC — 11 calculators, all Decimal math.
 
+v2.1.0: Seller net sheet fixes per Lee:
+  - No reissue rate discount on sale
+  - No title search fee on sale
+  - Doc prep = $150 deed + $50 release if payoff exists
 v2.0.0: Added TruValue, BuyerCompensation, BuyNowVsLater, PriceVsRate,
   ExtraPayment, ScenarioCompare. Tax proration + HUD-1 fee corrections.
 
@@ -41,6 +45,8 @@ logger = logging.getLogger(__name__)
 
 # Fee constants — from real Hub City Title HUD-1 (file 260527, 3/17/2026)
 TITLE_SEARCH_FEE = Decimal("175.00")
+DEED_PREP_FEE = Decimal("150.00")
+RELEASE_PREP_FEE = Decimal("50.00")
 DOC_PREP_FEE = Decimal("50.00")
 TAX_CERT_FEE = Decimal("10.00")
 E_RECORDING_FEE = Decimal("19.35")
@@ -125,12 +131,14 @@ class TitleCalculatorService:
             total_commission = seller_commission + buyer_commission
 
             owner_title_base = ZERO
-            reissue_discount = ZERO
             if county.owner_rate_table_id is not None:
                 owner_title_base = rate.get_title_premium(sale_price, county.owner_rate_table_id, db=db)
-                if data.prior_title_insurance and data.years_since_prior_policy is not None:
-                    reissue_discount = rate.get_reissue_discount(owner_title_base, int(data.years_since_prior_policy), county.owner_rate_table_id, db=db)
-            owner_title_premium = owner_title_base - reissue_discount
+            owner_title_premium = owner_title_base
+
+            # Doc prep: $150 for deed + $50 for release if there's a payoff
+            seller_doc_prep = DEED_PREP_FEE
+            if loan_balance > ZERO:
+                seller_doc_prep = seller_doc_prep + RELEASE_PREP_FEE
 
             closing_fee = _to_decimal(county.closing_fee_flat) / Decimal("2")
             recording_fee = _to_decimal(county.recording_fee_flat)
@@ -158,7 +166,7 @@ class TitleCalculatorService:
             total_seller_costs = (
                 total_commission + owner_title_premium + closing_fee + recording_fee
                 + transfer_tax + survey_fee + home_warranty + per_diem_interest
-                + TITLE_SEARCH_FEE + DOC_PREP_FEE + TAX_CERT_FEE + E_RECORDING_FEE
+                + seller_doc_prep + TAX_CERT_FEE + E_RECORDING_FEE
                 + TX_POLICY_GUARANTY_FEE + tax_proration + hoa_payoff
                 + seller_concessions + miscellaneous
             )
@@ -169,12 +177,9 @@ class TitleCalculatorService:
                 LineItem(label=f"Buyer Agent Commission ({buyer_pct}%)", amount=_round_cents(buyer_commission), category="commissions"),
                 LineItem(label="Owner's Title Policy", amount=_round_cents(owner_title_base), category="title"),
             ]
-            if reissue_discount > ZERO:
-                line_items.append(LineItem(label="Reissue Rate Discount", amount=_round_cents(-reissue_discount), category="title", note=f"Prior policy within {data.years_since_prior_policy} years"))
             line_items.extend([
                 LineItem(label="Title Closing Fee (split)", amount=_round_cents(closing_fee), category="title"),
-                LineItem(label="Title Search Fee", amount=_round_cents(TITLE_SEARCH_FEE), category="title"),
-                LineItem(label="Document Prep", amount=_round_cents(DOC_PREP_FEE), category="title"),
+                LineItem(label="Deed Prep" + (" + Release" if loan_balance > ZERO else ""), amount=_round_cents(seller_doc_prep), category="title"),
                 LineItem(label="Recording Fee", amount=_round_cents(recording_fee), category="government"),
                 LineItem(label="Transfer Tax", amount=_round_cents(transfer_tax), category="government"),
                 LineItem(label="Tax Certificates", amount=_round_cents(TAX_CERT_FEE), category="government"),
@@ -200,7 +205,7 @@ class TitleCalculatorService:
                 net_proceeds=_round_cents(net_proceeds), sale_price=_round_cents(sale_price),
                 loan_payoff=_round_cents(loan_balance), total_closing_costs=_round_cents(total_seller_costs),
                 total_commission=_round_cents(total_commission), owner_title_premium=_round_cents(owner_title_premium),
-                reissue_savings=_round_cents(reissue_discount), tax_proration=_round_cents(tax_proration),
+                reissue_savings=_round_cents(ZERO), tax_proration=_round_cents(tax_proration),
                 line_items=line_items, order_ready=True,
             )
             if data.save:

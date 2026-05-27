@@ -37,7 +37,9 @@ DEFAULT_FEES = {
         "guaranty_fee": True,
         "home_warranty": True,
         "survey": True,
-        "per_diem_interest": True
+        "per_diem_interest": True,
+        "reissue_discount": False,
+        "title_search_fee": False
     }
 }
 

@@ -1,8 +1,12 @@
 """
-services/title_calculator.py  v2.3.0
+services/title_calculator.py  v2.4.0
 Locked template — JARVIS title_company gig.
 CORE BUSINESS LOGIC — 11 calculators, all Decimal math.
 
+v2.4.0: Toggleable national features behind seller_toggles in fee_settings.
+  reissue_discount: looks up reissue_discounts table, applies % off owner premium.
+  title_search_fee: adds configurable title search fee to seller costs.
+  All toggles default OFF for Lee (Hub City), ON for national white-label.
 v2.3.0: Wire calculator to read fees from company.fee_settings (admin-configurable).
   seller_net_sheet + buyer_estimate now load fees from DB, fall back to hardcoded defaults.
   TDI 2025 premium table stays hardcoded (state law).
@@ -179,6 +183,7 @@ _FEE_DEFAULTS = {
     "appraisal_fee": 550.00,
     "credit_report_fee": 35.00,
     "flood_cert_fee": 20.00,
+    "title_search_fee_amount": 175.00,
 }
 
 
@@ -247,6 +252,31 @@ class TitleCalculatorService:
                 owner_title_base = _tdi_2025_premium(sale_price)
             owner_title_premium = owner_title_base
 
+            # ── Toggleable national features ──
+            seller_toggles = fees.get("seller_toggles", {})
+
+            # Reissue discount (if toggled on and prior policy info provided)
+            reissue_savings = ZERO
+            if seller_toggles.get("reissue_discount", False) and data.prior_title_insurance and data.years_since_prior_policy:
+                try:
+                    from models.reissue_discount import ReissueDiscount
+                    discount_row = db.execute(
+                        select(ReissueDiscount)
+                        .where(ReissueDiscount.rate_table_id == county.owner_rate_table_id)
+                        .where(ReissueDiscount.years_since_prior_policy >= data.years_since_prior_policy)
+                        .order_by(ReissueDiscount.years_since_prior_policy.asc())
+                        .limit(1)
+                    ).scalars().first()
+                    if discount_row:
+                        discount_pct = _to_decimal(discount_row.discount_pct) / Decimal("100")
+                        reissue_savings = owner_title_base * discount_pct
+                        owner_title_premium = owner_title_base - reissue_savings
+                except Exception as re_err:
+                    logger.debug("Reissue discount lookup failed: %s", re_err)
+
+            # Title search fee (if toggled on)
+            title_search = _to_decimal(fees.get("title_search_fee_amount", 175.00)) if seller_toggles.get("title_search_fee", False) else ZERO
+
             # Doc prep: deed + release if there's a payoff (fees from settings)
             seller_doc_prep = fee_deed_prep
             if loan_balance > ZERO:
@@ -280,7 +310,7 @@ class TitleCalculatorService:
                 + transfer_tax + survey_fee + home_warranty + per_diem_interest
                 + seller_doc_prep + fee_tax_cert + fee_e_recording
                 + fee_guaranty + tax_proration + hoa_payoff
-                + seller_concessions + miscellaneous
+                + seller_concessions + miscellaneous + title_search
             )
             net_proceeds = sale_price - loan_balance - total_seller_costs
 
@@ -289,6 +319,10 @@ class TitleCalculatorService:
                 LineItem(label=f"Buyer Agent Commission ({buyer_pct}%)", amount=_round_cents(buyer_commission), category="commissions"),
                 LineItem(label="Owner's Title Policy", amount=_round_cents(owner_title_base), category="title"),
             ]
+            if reissue_savings > ZERO:
+                line_items.append(LineItem(label=f"Reissue Rate Discount ({data.years_since_prior_policy}yr)", amount=_round_cents(-reissue_savings), category="title"))
+            if title_search > ZERO:
+                line_items.append(LineItem(label="Title Search Fee", amount=_round_cents(title_search), category="title"))
             line_items.extend([
                 LineItem(label="Title Closing Fee (split)", amount=_round_cents(closing_fee), category="title"),
                 LineItem(label="Deed Prep" + (" + Release" if loan_balance > ZERO else ""), amount=_round_cents(seller_doc_prep), category="title"),
@@ -317,7 +351,7 @@ class TitleCalculatorService:
                 net_proceeds=_round_cents(net_proceeds), sale_price=_round_cents(sale_price),
                 loan_payoff=_round_cents(loan_balance), total_closing_costs=_round_cents(total_seller_costs),
                 total_commission=_round_cents(total_commission), owner_title_premium=_round_cents(owner_title_premium),
-                reissue_savings=_round_cents(ZERO), tax_proration=_round_cents(tax_proration),
+                reissue_savings=_round_cents(reissue_savings), tax_proration=_round_cents(tax_proration),
                 line_items=line_items, order_ready=True,
             )
             if data.save:

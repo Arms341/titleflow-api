@@ -159,6 +159,7 @@ DEFAULT_FEES = {
     "flood_cert_fee": 20.00,
     "origination_rate_pct": 1.0,
     "default_per_diem_rate_pct": 6.5,
+    "title_search_fee_amount": 175.00,
     "endorsements": {
         "t19": {"amount": 80.99, "enabled": True, "label": "T-19 Restrictions/Encroachments"},
         "survey_cover": {"amount": 99.15, "enabled": True, "label": "Survey Cover (T-19.1)"},
@@ -174,7 +175,9 @@ DEFAULT_FEES = {
         "guaranty_fee": True,
         "home_warranty": True,
         "survey": True,
-        "per_diem_interest": True
+        "per_diem_interest": True,
+        "reissue_discount": False,
+        "title_search_fee": False
     }
 }
 
